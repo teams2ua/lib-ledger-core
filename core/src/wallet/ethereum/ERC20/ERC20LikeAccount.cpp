@@ -205,7 +205,7 @@ namespace ledger {
             if (! api::Address::isValid(address, _parentCurrency)) {
                 throw Exception(api::ErrorCode::INVALID_EIP55_FORMAT, "Invalid address : Invalid EIP55 format");
             }
-            return getBalance().map<std::vector<uint8_t>>(getContext(), [amount, address] (const std::shared_ptr<api::BigInt> &balance) {
+            return getBalance().map(getContext(), [amount, address] (const std::shared_ptr<api::BigInt> &balance) {
                 if ( amount->compare(balance) > 0) {
                     throw Exception(api::ErrorCode::NOT_ENOUGH_FUNDS, "Cannot gather enough funds.");
                 }

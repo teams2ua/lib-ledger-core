@@ -67,8 +67,9 @@ namespace ledger {
                 return *this;
             }
 
-            template <typename R>
-            Future<R> map(const Context& context, std::function<R (const T&)> map) {
+            template <typename F>
+            auto map(const Context& context, F map) -> Future<decltype(map(std::declval<T>()))> {
+                using R = decltype(map(std::declval<T>()));
                 auto defer = Future<R>::make_deffered();
                 _defer->addCallback([defer, map] (const Try<T>& result) {
                     Try<R> r;
@@ -82,11 +83,6 @@ namespace ledger {
                     defer->setResult(r);
                 }, context);
                 return Future<R>(defer);
-            }
-
-            template <typename R>
-            Future<std::shared_ptr<R>> mapPtr(const Context& context, std::function<std::shared_ptr<R> (const T&)> map) {
-                return this->template map<std::shared_ptr<R>>(context, map);
             }
 
             template <typename R>
@@ -173,7 +169,7 @@ namespace ledger {
             }
 
             Future<T> filter(const Context& context, std::function<bool (const T&)> f) {
-                return map<T>(context, [f] (const T& v) {
+                return map(context, [f] (const T& v) {
                     if (f(v)) {
                         return v;
                     } else {

@@ -193,11 +193,11 @@ namespace ledger {
 
         void TezosLikeAccount::broadcastRawTransaction(const std::vector<uint8_t> &transaction,
                                                        const std::shared_ptr<api::StringCallback> &callback) {
-            _explorer->pushTransaction(transaction).map<std::string>(getContext(),
-                                                                     [](const String &seq) -> std::string {
-                                                                         //TODO: optimistic update
-                                                                         return seq.str();
-                                                                     }).callback(getContext(), callback);
+            _explorer->pushTransaction(transaction).map(getContext(),
+                                                        [](const String &seq) -> std::string {
+                                                            //TODO: optimistic update
+                                                            return seq.str();
+                                                        }).callback(getContext(), callback);
         }
 
         void TezosLikeAccount::broadcastTransaction(const std::shared_ptr<api::TezosLikeTransaction> &transaction,
@@ -224,21 +224,21 @@ namespace ledger {
                 tx->setReceiver(TezosLikeAddress::fromBase58(request.toAddress, currency));
                 tx->setSigningPubKey(self->getKeychain()->getPublicKey(senderAddress).getValue());
                 tx->setType(request.type);
-                return explorer->getCounter(request.toAddress).mapPtr<api::TezosLikeTransaction>(self->getContext(), [self, tx] (const std::shared_ptr<BigInt> &nonce) {
+                return explorer->getCounter(request.toAddress).map(self->getContext(), [self, tx] (const std::shared_ptr<BigInt> &nonce) {
                     tx->setCounter(nonce);
                     return tx;
                 }).flatMapPtr<Block>(self->getContext(), [explorer] (const std::shared_ptr<api::TezosLikeTransaction> &transaction) {
                     return explorer->getCurrentBlock();
-                }).flatMapPtr<api::TezosLikeTransaction>(self->getContext(), [self, explorer, tx] (const std::shared_ptr<Block> &block) {
+                }).flatMapPtr<api::TezosLikeTransaction>(self->getContext(), [self, explorer, tx] (const std::shared_ptr<Block> &block)  {
                     tx->setBlockHash(block->hash);
                     if (tx->getType() == api::TezosOperationTag::OPERATION_TAG_ORIGINATION) {
                         std::vector<TezosLikeKeychain::Address> listAddresses{self->_keychain->getAddress()};
-                        return explorer->getBalance(listAddresses).mapPtr<api::TezosLikeTransaction>(self->getContext(), [tx] (const std::shared_ptr<BigInt> &balance) {
+                        return explorer->getBalance(listAddresses).map(self->getContext(), [tx] (const std::shared_ptr<BigInt> &balance) {
                             tx->setBalance(*balance);
-                            return tx;
+                            return std::dynamic_pointer_cast<api::TezosLikeTransaction>(tx);
                         });
                     }
-                    return FuturePtr<api::TezosLikeTransaction>::successful(tx);
+                    return FuturePtr<api::TezosLikeTransaction>::successful(std::dynamic_pointer_cast<api::TezosLikeTransaction>(tx));
                 });
             };
             return std::make_shared<TezosLikeTransactionBuilder>(getContext(),
@@ -261,7 +261,7 @@ namespace ledger {
         }
 
         void TezosLikeAccount::getFees(const std::shared_ptr<api::BigIntCallback> & callback) {
-            getFees().mapPtr<api::BigInt>(getContext(), [] (const std::shared_ptr<BigInt> &fees) -> std::shared_ptr<api::BigInt>
+            getFees().map(getContext(), [] (const std::shared_ptr<BigInt> &fees) -> std::shared_ptr<api::BigInt>
             {
                 if (!fees) {
                     throw make_exception(api::ErrorCode::RUNTIME_ERROR, "Failed to retrieve fees from network");

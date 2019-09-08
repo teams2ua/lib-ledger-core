@@ -69,7 +69,7 @@ namespace ledger {
                         return self->fillOutputs(buddy);
                     }).flatMap<Unit>(ImmediateExecutionContext::INSTANCE, [=] (const Unit&) -> Future<Unit> {
                         return self->fillTransactionInfo(buddy);
-                    }).mapPtr<api::BitcoinLikeTransaction>(ImmediateExecutionContext::INSTANCE, [=] (const Unit&) -> std::shared_ptr<api::BitcoinLikeTransaction> {
+                    }).map(ImmediateExecutionContext::INSTANCE, [=] (const Unit&) -> std::shared_ptr<api::BitcoinLikeTransaction> {
                         buddy->logger->info("Empty transaction built");
                         return buddy->transaction;
                     });;
@@ -151,7 +151,7 @@ namespace ledger {
                 }
             });
 
-            return buddy->explorer->getCurrentBlock().map<Unit>(ImmediateExecutionContext::INSTANCE, [=] (const std::shared_ptr<BitcoinLikeBlockchainExplorer::Block>& block) -> Unit{
+            return buddy->explorer->getCurrentBlock().map(ImmediateExecutionContext::INSTANCE, [=] (const std::shared_ptr<BitcoinLikeBlockchainExplorer::Block>& block) -> Unit{
                 buddy->transaction->setLockTime(static_cast<uint32_t>(block->height));
                 return unit;
             });
@@ -195,7 +195,7 @@ namespace ledger {
                 }
                 return buddy->explorer->getTransactionByHash(hash);
             };
-            return txGetter(hash).map<Unit>(ImmediateExecutionContext::INSTANCE, [=] (const std::shared_ptr<BitcoinLikeBlockchainExplorerTransaction>& tx) {
+            return txGetter(hash).map(ImmediateExecutionContext::INSTANCE, [=] (const std::shared_ptr<BitcoinLikeBlockchainExplorerTransaction>& tx) {
                 buddy->logger->debug("Get output {} on {}", std::get<1>(desc), tx->outputs.size());
                 auto output = tx->outputs[std::get<1>(desc)];
                 std::vector<std::vector<uint8_t>> pub_keys;
@@ -226,7 +226,7 @@ namespace ledger {
         BitcoinLikeUtxoPicker::createFilteredUtxoFunction(const BitcoinLikeTransactionBuildRequest &request,
                                                           const BitcoinLikeGetUtxoFunction &getUtxo) {
             return [=] () -> Future<std::vector<std::shared_ptr<api::BitcoinLikeOutput>>> {
-                return getUtxo().map<std::vector<std::shared_ptr<api::BitcoinLikeOutput>>>(getContext(), [=] (const std::vector<std::shared_ptr<api::BitcoinLikeOutput>>& utxo) {
+                return getUtxo().map(getContext(), [=] (const std::vector<std::shared_ptr<api::BitcoinLikeOutput>>& utxo) {
                     std::vector<std::shared_ptr<api::BitcoinLikeOutput>> filtered;
                     auto isExcluded = [&] (const std::shared_ptr<api::BitcoinLikeOutput>& output) -> bool {
                         for (auto& o : request.excludedUtxo) {

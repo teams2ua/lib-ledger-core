@@ -52,17 +52,17 @@ namespace ledger {
             auto bodyString = body.str();
             return _http->POST(fmt::format("/blockchain/{}/{}/transactions/send", getExplorerVersion(), getNetworkParameters().Identifier),
                                std::vector<uint8_t>(bodyString.begin(), bodyString.end())
-            ).json().template map<String>(getExplorerContext(), [] (const HttpRequest::JsonResult& result) -> String {
+            ).json().map(getExplorerContext(), [] (const HttpRequest::JsonResult& result) {
                 auto& json = *std::get<1>(result);
-                return json["result"].GetString();
+                return String(json["result"].GetString());
             });
         }
 
-        Future<void *> LedgerApiBitcoinLikeBlockchainExplorer::startSession() {
+        Future<std::string> LedgerApiBitcoinLikeBlockchainExplorer::startSession() {
             return startLedgerApiSession();
         }
 
-        Future<Unit> LedgerApiBitcoinLikeBlockchainExplorer::killSession(void *session) {
+        Future<Unit> LedgerApiBitcoinLikeBlockchainExplorer::killSession(const std::string& session) {
             return killLedgerApiSession(session);
         }
 
@@ -77,7 +77,7 @@ namespace ledger {
         FuturePtr<BitcoinLikeBlockchainExplorer::TransactionsBulk>
         LedgerApiBitcoinLikeBlockchainExplorer::getTransactions(const std::vector<std::string> &addresses,
                                                                 Option<std::string> fromBlockHash,
-                                                                Option<void *> session) {
+                                                                const std::string& session) {
             return getLedgerApiTransactions(addresses, fromBlockHash, session);
         }
 
@@ -110,7 +110,7 @@ namespace ledger {
             bool parseNumbersAsString = true;
             auto networkId = getNetworkParameters().Identifier;
             return _http->GET(fmt::format("/blockchain/{}/{}/fees", getExplorerVersion(), networkId))
-                    .json(parseNumbersAsString).map<std::vector<std::shared_ptr<api::BigInt>>>(getExplorerContext(), [networkId] (const HttpRequest::JsonResult& result) {
+                    .json(parseNumbersAsString).map(getExplorerContext(), [networkId] (const HttpRequest::JsonResult& result) {
                         auto& json = *std::get<1>(result);
                         if (!json.IsObject()) {
                             throw make_exception(api::ErrorCode::HTTP_ERROR, "Failed to get fees for {}", networkId);

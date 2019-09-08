@@ -102,7 +102,7 @@ namespace ledger {
         }
 
         void WalletPoolApi::getWalletCount(const std::shared_ptr<api::I32Callback> &callback) {
-            _pool->getWalletCount().map<int32_t>(_pool->getContext(), [] (const int64_t count) {
+            _pool->getWalletCount().map(_pool->getContext(), [] (const int64_t count) {
                 return (int32_t) count;
             }).callback(_mainContext, callback);
         }
@@ -145,7 +145,7 @@ namespace ledger {
 
         void WalletPoolApi::getWallets(int32_t from, int32_t size, const std::shared_ptr<api::WalletListCallback> &callback) {
             _pool->getWallets(from, size)
-            .map<std::vector<std::shared_ptr<api::Wallet>>>(_pool->getContext(), [] (const std::vector<std::shared_ptr<AbstractWallet>>& wallets) {
+            .map(_pool->getContext(), [] (const std::vector<std::shared_ptr<AbstractWallet>>& wallets) {
                 auto size = wallets.size();
                 std::vector<std::shared_ptr<api::Wallet>> out(size);
                 for (auto i = 0; i < size; i++) {

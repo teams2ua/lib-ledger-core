@@ -182,7 +182,7 @@ namespace ledger {
         Future<api::AccountCreationInfo> TezosLikeWallet::getAccountCreationInfo(int32_t accountIndex) {
             auto self = std::dynamic_pointer_cast<TezosLikeWallet>(shared_from_this());
             return getExtendedKeyAccountCreationInfo(accountIndex)
-                    .map<api::AccountCreationInfo>(getContext(), [self, accountIndex](const api::ExtendedKeyAccountCreationInfo info) {
+                    .map(getContext(), [self, accountIndex](const api::ExtendedKeyAccountCreationInfo info) {
                         api::AccountCreationInfo result;
                         result.index = accountIndex;
                         auto length = info.derivations.size();

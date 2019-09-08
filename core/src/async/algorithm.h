@@ -58,7 +58,7 @@ namespace ledger {
             template <class T>
             Future< std::vector<T> > sequence(const std::shared_ptr<api::ExecutionContext>& context, const std::vector< Future<T> >& futures) {
             auto buffer = new std::vector<T>();
-            return internals::sequence_go<T>(context, 0, futures, buffer).template map< std::vector<T> >(context, [buffer] (const Unit&) -> std::vector<T> {
+            return internals::sequence_go<T>(context, 0, futures, buffer).map(context, [buffer] (const Unit&) -> std::vector<T> {
             auto res = *buffer;
             delete buffer;
             return res;

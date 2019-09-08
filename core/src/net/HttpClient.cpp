@@ -130,7 +130,7 @@ namespace ledger {
                 logger->info("{} {}", api::to_string(request->getMethod()), request->getUrl());
             });
             auto logger = _logger;
-            return  request->getFuture().map<std::shared_ptr<api::HttpUrlConnection>>(_context, [=] (const std::shared_ptr<api::HttpUrlConnection>& connection) {
+            return  request->getFuture().map(_context, [=] (const std::shared_ptr<api::HttpUrlConnection>& connection) {
                 logger.foreach([&] (const std::shared_ptr<spdlog::logger>& l) {
                     l->info("{} {} - {} {}", api::to_string(request->getMethod()), request->getUrl(),  connection->getStatusCode(), connection->getStatusText());
                 });
@@ -148,8 +148,7 @@ namespace ledger {
                     return std::static_pointer_cast<api::HttpUrlConnection>(exception.getUserData().getValue());
                 }
                 throw exception;
-            }).map<JsonResult>
-                    (_context, [parseNumbersAsString] (const std::shared_ptr<api::HttpUrlConnection>& co) {
+            }).map(_context, [parseNumbersAsString] (const std::shared_ptr<api::HttpUrlConnection>& co) {
                         std::shared_ptr<api::HttpUrlConnection> connection = co;
                         auto doc = std::make_shared<rapidjson::Document>();
                         HttpUrlConnectionInputStream is(connection);

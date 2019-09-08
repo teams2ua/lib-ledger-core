@@ -57,14 +57,14 @@ namespace ledger {
             Future<std::shared_ptr<BigInt>> getEstimatedGasLimit(const std::string &address) override;
             Future<std::shared_ptr<BigInt>> getERC20Balance(const std::string &address, const std::string &erc20Address) override;
             Future<String> pushLedgerApiTransaction(const std::vector<uint8_t> &transaction) override;
-            Future<void *> startSession() override;
-            Future<Unit> killSession(void *session) override;
+            Future<std::string> startSession() override;
+            Future<Unit> killSession(const std::string&) override;
             Future<Bytes> getRawTransaction(const String& transactionHash) override;
             Future<String> pushTransaction(const std::vector<uint8_t>& transaction) override;
 
             FuturePtr<EthereumLikeBlockchainExplorer::TransactionsBulk>
             getTransactions(const std::vector<std::string> &addresses, Option<std::string> fromBlockHash = Option<std::string>(),
-                            Option<void *> session = Option<void *>()) override;
+                            const std::string& session = "") override;
 
             FuturePtr<Block> getCurrentBlock() const override;
             FuturePtr<EthereumLikeBlockchainExplorerTransaction> getTransactionByHash(const String &transactionHash) const override;

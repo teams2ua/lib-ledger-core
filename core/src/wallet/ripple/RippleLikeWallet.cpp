@@ -207,7 +207,7 @@ namespace ledger {
 
         Future<api::AccountCreationInfo> RippleLikeWallet::getAccountCreationInfo(int32_t accountIndex) {
             auto self = std::dynamic_pointer_cast<RippleLikeWallet>(shared_from_this());
-            return getExtendedKeyAccountCreationInfo(accountIndex).map<api::AccountCreationInfo>(getContext(), [self, accountIndex](const api::ExtendedKeyAccountCreationInfo info) {
+            return getExtendedKeyAccountCreationInfo(accountIndex).map(getContext(), [self, accountIndex](const api::ExtendedKeyAccountCreationInfo info) {
                 api::AccountCreationInfo result;
                 result.index = getAccountIndex(self->getDerivationScheme(), accountIndex);
                 auto length = info.derivations.size();

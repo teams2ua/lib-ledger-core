@@ -47,7 +47,7 @@ namespace ledger {
         BitcoinLikeStrategyUtxoPicker::filterInputs(const std::shared_ptr<BitcoinLikeUtxoPicker::Buddy> &buddy) {
             return computeAggregatedAmount(buddy).flatMap<UTXODescriptorList>(getContext(), [=] (const BigInt& a) -> Future<UTXODescriptorList> {
                 buddy->logger->info("GET UTXO");
-                return buddy->getUtxo().map<UTXODescriptorList>(getContext(), [=] (const std::vector<std::shared_ptr<api::BitcoinLikeOutput>>& utxo) -> UTXODescriptorList {
+                return buddy->getUtxo().map(getContext(), [=] (const std::vector<std::shared_ptr<api::BitcoinLikeOutput>>& utxo) -> UTXODescriptorList {
                     buddy->logger->info("GOT UTXO");
                     if (utxo.size() == 0)
                         throw make_exception(api::ErrorCode::NOT_ENOUGH_FUNDS, "There is no UTXO on this account.");

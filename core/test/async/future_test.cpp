@@ -75,7 +75,7 @@ TEST(Future, Map) {
     auto queue = dispatcher->getSerialExecutionContext("queue");
     Future<std::string>::async(queue, [] () -> std::string {
         return "Hello world";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " from another thread";
     }).foreach(dispatcher->getMainExecutionContext(), [dispatcher] (const std::string& value) {
         EXPECT_EQ("Hello world from another thread", value);
@@ -89,7 +89,7 @@ TEST(Future, MapToInt) {
     auto queue = dispatcher->getSerialExecutionContext("queue");
     Future<std::string>::async(queue, [] () -> std::string {
         return "42";
-    }).map<int>(queue, [] (const std::string& str) -> int {
+    }).map(queue, [] (const std::string& str) -> int {
         return std::atoi(str.c_str());
     }).foreach(dispatcher->getMainExecutionContext(), [dispatcher] (const int& value) {
         EXPECT_EQ(42, value);
@@ -120,11 +120,11 @@ TEST(Future, MapChain) {
     auto queue = dispatcher->getSerialExecutionContext("queue");
     Future<std::string>::async(queue, [] () -> std::string {
         return "Hello world";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " from";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " another";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " thread";
     }).foreach(dispatcher->getMainExecutionContext(), [dispatcher] (const std::string& value) {
         EXPECT_EQ("Hello world from another thread", value);
@@ -138,11 +138,11 @@ TEST(Future, MapChainRecover) {
     auto queue = dispatcher->getSerialExecutionContext("queue");
     Future<std::string>::async(queue, [] () -> std::string {
         return "Hello world";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " from";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " another";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         throw std::out_of_range("Not good");
     }).recover(queue, [] (const Exception& ex) {
         return "Whew, we recovered !";
@@ -158,11 +158,11 @@ TEST(Future, MapChainRecoverWith) {
     auto queue = dispatcher->getSerialExecutionContext("queue");
     Future<std::string>::async(queue, [] () -> std::string {
         return "Hello world";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " from";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " another";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         throw std::out_of_range("Not good");
     }).recoverWith(queue, [queue] (const Exception& ex) {
         return Future<std::string>::async(queue, [] () {
@@ -180,11 +180,11 @@ TEST(Future, MapChainRecoverWithFail) {
     auto queue = dispatcher->getSerialExecutionContext("queue");
     Future<std::string>::async(queue, [] () -> std::string {
         return "Hello world";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " from";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " another";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         throw std::out_of_range("Not good");
     }).recoverWith(queue, [queue] (const Exception& ex) {
         return Future<std::string>::async(queue, [] () -> std::string{
@@ -214,11 +214,11 @@ TEST(Future, MapChainFallback) {
     auto queue = dispatcher->getSerialExecutionContext("queue");
     Future<std::string>::async(queue, [] () -> std::string {
         return "Hello world";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " from";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " another";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         throw std::out_of_range("Not good");
     }).fallback("Whew, we recovered !").foreach(dispatcher->getMainExecutionContext(), [dispatcher] (const std::string& value) {
         EXPECT_EQ("Whew, we recovered !", value);
@@ -232,11 +232,11 @@ TEST(Future, MapChainFallbackWith) {
     auto queue = dispatcher->getSerialExecutionContext("queue");
     Future<std::string>::async(queue, [] () -> std::string {
         return "Hello world";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " from";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         return str + " another";
-    }).map<std::string>(queue, [] (const std::string& str) -> std::string {
+    }).map(queue, [] (const std::string& str) -> std::string {
         throw std::out_of_range("Not good");
     }).fallbackWith(Future<std::string>::async(queue, [] () {
             return "Whew, we recovered !";

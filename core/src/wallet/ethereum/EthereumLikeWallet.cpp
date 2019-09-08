@@ -189,7 +189,7 @@ namespace ledger {
 
         Future<api::AccountCreationInfo> EthereumLikeWallet::getAccountCreationInfo(int32_t accountIndex) {
             auto self = std::dynamic_pointer_cast<EthereumLikeWallet>(shared_from_this());
-            return getExtendedKeyAccountCreationInfo(accountIndex).map<api::AccountCreationInfo>(getContext(), [self, accountIndex] (const api::ExtendedKeyAccountCreationInfo info) -> api::AccountCreationInfo {
+            return getExtendedKeyAccountCreationInfo(accountIndex).map(getContext(), [self, accountIndex] (const api::ExtendedKeyAccountCreationInfo info) -> api::AccountCreationInfo {
                 api::AccountCreationInfo result;
                 result.index = accountIndex;
                 auto length = info.derivations.size();

@@ -528,7 +528,7 @@ namespace ledger {
         }
 
         Future<std::string> BitcoinLikeAccount::broadcastTransaction(const std::vector<uint8_t> &transaction) {
-            return _explorer->pushTransaction(transaction).map<std::string>(getContext(), [] (const String& hash) -> std::string {
+            return _explorer->pushTransaction(transaction).map(getContext(), [] (const String& hash) -> std::string {
                 return hash.str();
             });
         }
@@ -551,7 +551,7 @@ namespace ledger {
         void BitcoinLikeAccount::broadcastRawTransaction(const std::vector<uint8_t> &transaction,
                                                          const std::shared_ptr<api::StringCallback> &callback) {
             auto self = getSelf();
-            _explorer->pushTransaction(transaction).map<std::string>(getContext(), [self, transaction] (const String& seq) -> std::string {
+            _explorer->pushTransaction(transaction).map(getContext(), [self, transaction] (const String& seq) -> std::string {
                 //Store newly broadcasted tx in db
                 //First parse it
                 auto txHash = seq.str();

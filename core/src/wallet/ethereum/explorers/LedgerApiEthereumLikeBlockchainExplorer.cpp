@@ -46,7 +46,7 @@ namespace ledger {
 
         Future<std::shared_ptr<BigInt>> LedgerApiEthereumLikeBlockchainExplorer::getNonce(const std::string &address) {
             return _http->GET(fmt::format("/blockchain/{}/{}/addresses/{}/nonce",_explorerVersion, _parameters.Identifier, address))
-                    .json().mapPtr<BigInt>(getContext(), [address] (const HttpRequest::JsonResult& result) {
+                    .json().map(getContext(), [address] (const HttpRequest::JsonResult& result) {
                         auto& json = *std::get<1>(result);
                         if (!json.IsArray() || json.Size() != 1 || !json[0].HasMember("nonce") || !json[0]["nonce"].IsUint64()) {
                             throw make_exception(api::ErrorCode::HTTP_ERROR, "Failed to get nonce for {}", address);
@@ -69,7 +69,7 @@ namespace ledger {
             }
             bool parseNumbersAsString = true;
             return _http->GET(fmt::format("/blockchain/{}/{}/addresses/{}/balance", _explorerVersion, _parameters.Identifier, addressesStr))
-                    .json(parseNumbersAsString).mapPtr<BigInt>(getContext(), [addressesStr, size] (const HttpRequest::JsonResult& result) {
+                    .json(parseNumbersAsString).map(getContext(), [addressesStr, size] (const HttpRequest::JsonResult& result) {
                         auto& json = *std::get<1>(result);
                         if (!json.IsArray() || json.Size() != size || !json[0].HasMember("balance") || !json[0]["balance"].IsString()) {
                             throw make_exception(api::ErrorCode::HTTP_ERROR, "Failed to get balance for {}", addressesStr);
@@ -90,7 +90,7 @@ namespace ledger {
                                                                                            const std::string &field) {
             bool parseNumbersAsString = true;
             auto networkId = getNetworkParameters().Identifier;
-            return _http->GET(url, std::unordered_map<std::string, std::string>()).json(parseNumbersAsString).mapPtr<BigInt>(getContext(), [field, networkId] (const HttpRequest::JsonResult& result) {
+            return _http->GET(url, std::unordered_map<std::string, std::string>()).json(parseNumbersAsString).map(getContext(), [field, networkId] (const HttpRequest::JsonResult& result) {
                         auto& json = *std::get<1>(result);
                         if (!json.IsObject() || !json.GetObject().HasMember(field.c_str()) || !json.GetObject()[field.c_str()].IsString()) {
                             throw make_exception(api::ErrorCode::HTTP_ERROR, fmt::format("Failed to get {} for {}", field, networkId));
@@ -128,7 +128,7 @@ namespace ledger {
             std::unordered_map<std::string, std::string> headers{{"Content-Type", "application/json"}};
             return _http->POST(fmt::format("/blockchain/{}/{}/erc20/balance", getExplorerVersion(), getNetworkParameters().Identifier), std::vector<uint8_t>(requestBody.begin(), requestBody.end()), headers)
                     .json(parseNumbersAsString)
-                    .mapPtr<BigInt>(getContext(), [field, networkId] (const HttpRequest::JsonResult& result) {
+                    .map(getContext(), [field, networkId] (const HttpRequest::JsonResult& result) {
                 auto& json = *std::get<1>(result);
 
                 if (!json.IsObject() || !json.GetObject().HasMember(field.c_str()) || !json.GetObject()[field.c_str()].IsString()) {
@@ -145,17 +145,17 @@ namespace ledger {
             auto bodyString = body.str();
             return _http->POST(fmt::format("/blockchain/{}/{}/transactions/send", getExplorerVersion(), getNetworkParameters().Identifier),
                                std::vector<uint8_t>(bodyString.begin(), bodyString.end())
-            ).json().template map<String>(getExplorerContext(), [] (const HttpRequest::JsonResult& result) -> String {
+            ).json().map(getExplorerContext(), [] (const HttpRequest::JsonResult& result) -> String {
                 auto& json = *std::get<1>(result);
                 return json["result"].GetString();
             });
         }
 
-        Future<void *> LedgerApiEthereumLikeBlockchainExplorer::startSession() {
+        Future<std::string> LedgerApiEthereumLikeBlockchainExplorer::startSession() {
             return startLedgerApiSession();
         }
 
-        Future<Unit> LedgerApiEthereumLikeBlockchainExplorer::killSession(void *session) {
+        Future<Unit> LedgerApiEthereumLikeBlockchainExplorer::killSession(const std::string& session) {
             return killLedgerApiSession(session);
         }
 
@@ -170,7 +170,7 @@ namespace ledger {
         FuturePtr<EthereumLikeBlockchainExplorer::TransactionsBulk>
         LedgerApiEthereumLikeBlockchainExplorer::getTransactions(const std::vector<std::string> &addresses,
                                                         Option<std::string> fromBlockHash,
-                                                        Option<void *> session) {
+                                                        const std::string& session) {
             bool isSnakeCase = true;
             return getLedgerApiTransactions(addresses, fromBlockHash, session, isSnakeCase);
         }

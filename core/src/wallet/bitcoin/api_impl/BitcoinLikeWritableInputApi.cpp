@@ -131,10 +131,10 @@ namespace ledger {
         }
 
         Future<std::vector<uint8_t>> BitcoinLikeWritableInputApi::getPreviousTransaction() {
-            return _explorer->getRawTransaction(getPreviousTxHash().value()).map<std::vector<uint8_t> >(_context,
-                                                                                                        [](const Bytes &bytes) {
-                                                                                                            return bytes.getContainer();
-                                                                                                        });
+            return _explorer->getRawTransaction(getPreviousTxHash().value()).map(_context,
+                                                                                [](const Bytes &bytes) {
+                                                                                    return bytes.getContainer();
+                                                                                });
         }
 
     }

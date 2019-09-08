@@ -120,7 +120,7 @@ namespace ledger {
                 uint32_t halfBatchSize;
                 std::shared_ptr<Keychain> keychain;
                 Option<BlockchainExplorerAccountSynchronizationSavedState> savedState;
-                Option<void *> token;
+                std::string token;
                 std::shared_ptr<Account> account;
                 std::map<std::string, std::string> transactionsToDrop;
             };
@@ -228,15 +228,15 @@ namespace ledger {
                 updateCurrentBlock(buddy, account->getContext());
 
                 auto self = getSharedFromThis();
-                return _explorer->startSession().template map<Unit>(account->getContext(), [buddy] (void * const& t) -> Unit {
+                return _explorer->startSession().map(account->getContext(), [buddy] (const std::string& t) -> Unit {
                     buddy->logger->info("Synchronization token obtained");
-                    buddy->token = Option<void *>(t);
+                    buddy->token = t;
                     return unit;
-                }).template flatMap<Unit>(account->getContext(), [buddy, self] (const Unit&) {
+                }).flatMap<Unit>(account->getContext(), [buddy, self] (const Unit&) {
                     return self->synchronizeBatches(0, buddy);
-                }).template flatMap<Unit>(account->getContext(), [self, buddy] (const Unit&) {
-                    return self->_explorer->killSession(buddy->token.getValue());
-                }).template map<Unit>(ImmediateExecutionContext::INSTANCE, [self, buddy] (const Unit&) {
+                }).flatMap<Unit>(account->getContext(), [self, buddy] (const Unit&) {
+                    return self->_explorer->killSession(buddy->token);
+                }).map(ImmediateExecutionContext::INSTANCE, [self, buddy] (const Unit&) {
                     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
                             (DateUtils::now() - buddy->startDate.time_since_epoch()).time_since_epoch());
                     buddy->logger->info("End synchronization for account#{} of wallet {} in {}", buddy->account->getIndex(),
@@ -395,7 +395,7 @@ namespace ledger {
                 benchmark->start();
                 return _explorer
                     ->getTransactions(batch, blockHash, buddy->token)
-                    .template flatMap<bool>(buddy->account->getContext(), [self, currentBatchIndex, buddy, hadTransactions, benchmark] (const std::shared_ptr<typename Explorer::TransactionsBulk>& bulk) -> Future<bool> {
+                    .flatMap<bool>(buddy->account->getContext(), [self, currentBatchIndex, buddy, hadTransactions, benchmark] (const std::shared_ptr<Explorer::TransactionsBulk>& bulk) -> Future<bool> {
                         benchmark->stop();
 
                         auto insertionBenchmark = std::make_shared<Benchmarker>("Transaction computation", buddy->logger);

@@ -166,7 +166,7 @@ namespace ledger {
         FuturePtr<Amount> RippleLikeAccount::getBalance() {
             std::vector<RippleLikeKeychain::Address> listAddresses{_keychain->getAddress()};
             auto currency = getWallet()->getCurrency();
-            return _explorer->getBalance(listAddresses).mapPtr<Amount>(getContext(), [currency](
+            return _explorer->getBalance(listAddresses).map(getContext(), [currency](
                     const std::shared_ptr<BigInt> &balance) -> std::shared_ptr<Amount> {
                 return std::make_shared<Amount>(currency, 0, BigInt(balance->toString()));
             });
@@ -367,7 +367,7 @@ namespace ledger {
 
         void RippleLikeAccount::broadcastRawTransaction(const std::vector<uint8_t> &transaction,
                                                         const std::shared_ptr<api::StringCallback> &callback) {
-            _explorer->pushTransaction(transaction).map<std::string>(getContext(),
+            _explorer->pushTransaction(transaction).map(getContext(),
                                                                      [](const String &seq) -> std::string {
                                                                          //TODO: optimistic update
                                                                          return seq.str();
@@ -414,7 +414,7 @@ namespace ledger {
                 return explorer->getSequence(accountAddress->toString()).flatMapPtr<api::RippleLikeTransaction>(self->getContext(), [self, tx, explorer] (const std::shared_ptr<BigInt> &sequence) -> FuturePtr<api::RippleLikeTransaction> {
                     tx->setSequence(*sequence);
 
-                    return explorer->getLedgerSequence().mapPtr<api::RippleLikeTransaction>(self->getContext(), [self, tx] (const std::shared_ptr<BigInt>& ledgerSequence) -> std::shared_ptr<api::RippleLikeTransaction> {
+                    return explorer->getLedgerSequence().map(self->getContext(), [self, tx] (const std::shared_ptr<BigInt>& ledgerSequence) -> std::shared_ptr<api::RippleLikeTransaction> {
                         // according to this <https://xrpl.org/reliable-transaction-submission.html#lastledgersequence>,
                         // we should set the LastLedgerSequence value on every transaction; advised to
                         // use the ledger index of the latest valid ledger + 4
@@ -438,7 +438,7 @@ namespace ledger {
 
         FuturePtr<api::Amount> RippleLikeAccount::getFees() {
             auto self = shared_from_this();
-            return _explorer->getFees().mapPtr<api::Amount>(getContext(), [self] (const std::shared_ptr<BigInt> &fees) {
+            return _explorer->getFees().map(getContext(), [self] (const std::shared_ptr<BigInt> &fees) -> std::shared_ptr<api::Amount> {
                 // Fees in drops
                 return std::make_shared<Amount>(self->getWallet()->getCurrency(), 0, *fees);
             });
@@ -450,7 +450,7 @@ namespace ledger {
 
         FuturePtr<api::Amount> RippleLikeAccount::getBaseReserve() {
             auto self = shared_from_this();
-            return _explorer->getBaseReserve().mapPtr<api::Amount>(getContext(), [self] (const std::shared_ptr<BigInt> &reserve) {
+            return _explorer->getBaseReserve().map(getContext(), [self] (const std::shared_ptr<BigInt> &reserve) -> std::shared_ptr<api::Amount>{
                 // Reserve in XRPs
                 return std::make_shared<Amount>(self->getWallet()->getCurrency(), 0, *reserve);
             });

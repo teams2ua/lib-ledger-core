@@ -270,7 +270,7 @@ namespace ledger {
         FuturePtr<Amount> EthereumLikeAccount::getBalance() {
             std::vector<EthereumLikeKeychain::Address> listAddresses{_keychain->getAddress()};
                 auto currency = getWallet()->getCurrency();
-                return _explorer->getBalance(listAddresses).mapPtr<Amount>(getContext(), [currency] (const std::shared_ptr<BigInt> &balance) -> std::shared_ptr<Amount> {
+                return _explorer->getBalance(listAddresses).map(getContext(), [currency] (const std::shared_ptr<BigInt> &balance) {
                     return std::make_shared<Amount>(currency, 0, BigInt(balance->toString()));
                 });
         }
@@ -501,7 +501,7 @@ namespace ledger {
         void EthereumLikeAccount::broadcastRawTransaction(const std::vector<uint8_t> & transaction,
                                                           const std::shared_ptr<api::StringCallback> & callback) {
             auto self = getSelf();
-            _explorer->pushTransaction(transaction).map<std::string>(getContext(), [self, transaction] (const String& seq) -> std::string {
+            _explorer->pushTransaction(transaction).map(getContext(), [self, transaction] (const String& seq) -> std::string {
                 auto txHash = seq.str();
                 auto optimisticUpdate = Try<int>::from([&] () -> int {
                     auto txExplorer = getETHLikeBlockchainExplorerTxFromRawTx(self, txHash, transaction);
@@ -529,19 +529,19 @@ namespace ledger {
         }
 
         void EthereumLikeAccount::getGasPrice(const std::shared_ptr<api::BigIntCallback> & callback) {
-            _explorer->getGasPrice().mapPtr<api::BigInt>(getContext(), [] (const std::shared_ptr<BigInt> &gasPrice) -> std::shared_ptr<api::BigInt> {
+            _explorer->getGasPrice().map(getContext(), [] (const std::shared_ptr<BigInt> &gasPrice) {
                 return std::make_shared<api::BigIntImpl>(*gasPrice);
             }).callback(getContext(), callback);
         }
 
         void EthereumLikeAccount::getEstimatedGasLimit(const std::string & address, const std::shared_ptr<api::BigIntCallback> & callback) {
-            _explorer->getEstimatedGasLimit(address).mapPtr<api::BigInt>(getContext(), [] (const std::shared_ptr<BigInt> &gasPrice) -> std::shared_ptr<api::BigInt> {
+            _explorer->getEstimatedGasLimit(address).map(getContext(), [] (const std::shared_ptr<BigInt> &gasPrice) {
                 return std::make_shared<api::BigIntImpl>(*gasPrice);
             }).callback(getContext(), callback);
         }
 
         FuturePtr<api::BigInt> EthereumLikeAccount::getERC20Balance(const std::string & erc20Address) {
-            return _explorer->getERC20Balance(_keychain->getAddress()->toEIP55(), erc20Address).mapPtr<api::BigInt>(getContext(), [] (const std::shared_ptr<BigInt> &erc20Balance) -> std::shared_ptr<api::BigInt> {
+            return _explorer->getERC20Balance(_keychain->getAddress()->toEIP55(), erc20Address).map(getContext(), [] (const std::shared_ptr<BigInt> &erc20Balance) -> std::shared_ptr<api::BigInt> {
                 return std::make_shared<api::BigIntImpl>(*erc20Balance);
             });
         }
@@ -588,9 +588,9 @@ namespace ledger {
                         tx->setReceiver(request.toAddress);
                         auto accountAddress = self->getKeychain()->getAddress()->toString();
                         tx->setSender(accountAddress);
-                        return explorer->getNonce(accountAddress).map<std::shared_ptr<api::EthereumLikeTransaction>>(self->getContext(), [self, tx] (const std::shared_ptr<BigInt> &nonce) -> std::shared_ptr<api::EthereumLikeTransaction> {
+                        return explorer->getNonce(accountAddress).map(self->getContext(), [self, tx] (const std::shared_ptr<BigInt> &nonce) {
                             tx->setNonce(nonce);
-                            return tx;
+                            return std::dynamic_pointer_cast<api::EthereumLikeTransaction>(tx);
                         });
                     });
                 };

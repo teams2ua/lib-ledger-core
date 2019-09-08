@@ -53,11 +53,11 @@ namespace ledger {
                 std::string marker; //Needed for pagination for XRP: https://developers.ripple.com/markers-and-pagination.html
             };
 
-            virtual Future<void *> startSession() = 0;
-            virtual Future<Unit> killSession(void *session) = 0;
+            virtual Future<std::string> startSession() = 0;
+            virtual Future<Unit> killSession(const std::string& session) = 0;
             virtual FuturePtr<TransactionsBulk> getTransactions(const std::vector<std::string>& addresses,
                                                                 Option<std::string> fromBlockHash = Option<std::string>(),
-                                                                Option<void*> session = Option<void *>()) = 0;
+                                                                const std::string& session = "") = 0;
             virtual FuturePtr<Block> getCurrentBlock() const = 0;
             virtual Future<Bytes> getRawTransaction(const String& transactionHash) = 0;
             virtual FuturePtr<Transaction> getTransactionByHash(const String& transactionHash) const = 0;

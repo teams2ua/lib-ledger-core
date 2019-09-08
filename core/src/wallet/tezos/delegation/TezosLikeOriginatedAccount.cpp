@@ -75,7 +75,7 @@ namespace ledger {
         }
 
         FuturePtr<api::Amount> TezosLikeOriginatedAccount::getBalance(const std::shared_ptr<api::ExecutionContext>& context) {
-            return std::dynamic_pointer_cast<OperationQuery>(queryOperations()->complete())->execute().mapPtr<api::Amount>(context, [] (const std::vector<std::shared_ptr<api::Operation>> &ops) {
+            return std::dynamic_pointer_cast<OperationQuery>(queryOperations()->complete())->execute().map(context, [] (const std::vector<std::shared_ptr<api::Operation>> &ops) {
                 auto result = BigInt::ZERO;
                 for (auto &op : ops) {
                     auto ty = op->getOperationType();
@@ -93,7 +93,7 @@ namespace ledger {
                             break;
                     }
                 }
-                return std::make_shared<Amount>(currencies::TEZOS, 0, result);
+                return std::dynamic_pointer_cast<api::Amount>(std::make_shared<Amount>(currencies::TEZOS, 0, result));
             });
         }
 
@@ -115,7 +115,7 @@ namespace ledger {
                                                       const std::chrono::system_clock::time_point & end,
                                                       api::TimePeriod period) {
             bool descending = false;
-            return std::dynamic_pointer_cast<OperationQuery>(queryOperations()->addOrder(api::OperationOrderKey::DATE, descending)->complete())->execute().map<std::vector<std::shared_ptr<api::Amount>>>(context, [=] (const std::vector<std::shared_ptr<api::Operation>> &ops) {
+            return std::dynamic_pointer_cast<OperationQuery>(queryOperations()->addOrder(api::OperationOrderKey::DATE, descending)->complete())->execute().map(context, [=] (const std::vector<std::shared_ptr<api::Operation>> &ops) {
                 struct OperationStrategy {
 
                     static inline std::chrono::system_clock::time_point date(std::shared_ptr<api::Operation>& op) {

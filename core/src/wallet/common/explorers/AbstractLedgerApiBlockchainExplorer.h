@@ -53,16 +53,16 @@ namespace ledger {
             FuturePtr<TransactionsBulk>
             getLedgerApiTransactions(const std::vector<std::string> &addresses,
                             Option<std::string> fromBlockHash,
-                            Option<void *> session,
+                            const std::string& session,
                             bool isSnakeCase = false) {
                 auto joinedAddresses = Array<std::string>(addresses).join(strings::mkString(",")).getValueOr("");
                 std::string params;
                 std::unordered_map<std::string, std::string> headers;
 
-                if (session.isEmpty()) {
+                if (session.empty()) {
                     params = isSnakeCase ? "?no_token=true" : "?noToken=true";
                 } else {
-                    headers["X-LedgerWallet-SyncToken"] = *((std::string *)session.getValue());
+                    headers["X-LedgerWallet-SyncToken"] = session;
                 }
                 if (!fromBlockHash.isEmpty()) {
                     if (params.size() > 0) {
@@ -75,7 +75,7 @@ namespace ledger {
                 }
                 return _http->GET(fmt::format("/blockchain/{}/{}/addresses/{}/transactions{}", getExplorerVersion(), getNetworkParameters().Identifier, joinedAddresses, params), headers)
                         .template json<TransactionsBulk, Exception>(LedgerApiParser<TransactionsBulk, TransactionsBulkParser>())
-                        .template mapPtr<TransactionsBulk>(getExplorerContext(), [fromBlockHash] (const Either<Exception, std::shared_ptr<TransactionsBulk>>& result) {
+                        .map(getExplorerContext(), [fromBlockHash] (const Either<Exception, std::shared_ptr<TransactionsBulk>>& result) {
                             if (result.isLeft()) {
                                 if (fromBlockHash.isEmpty()) {
                                     throw result.getLeft();
@@ -92,7 +92,7 @@ namespace ledger {
             getLedgerApiCurrentBlock() const {
                 return _http->GET(fmt::format("/blockchain/{}/{}/blocks/current", getExplorerVersion(), getNetworkParameters().Identifier))
                         .template json<Block, Exception>(LedgerApiParser<Block, BlockParser>())
-                        .template mapPtr<Block>(getExplorerContext(), [] (const Either<Exception, std::shared_ptr<Block>>& result) {
+                        .map(getExplorerContext(), [] (const Either<Exception, std::shared_ptr<Block>>& result) {
                             if (result.isLeft()) {
                                 throw result.getLeft();
                             } else {
@@ -105,7 +105,7 @@ namespace ledger {
             getLedgerApiTransactionByHash(const String &transactionHash) const {
                 return _http->GET(fmt::format("/blockchain/{}/{}/transactions/{}", getExplorerVersion(), getNetworkParameters().Identifier, transactionHash.str()))
                         .template json<std::vector<BlockchainExplorerTransaction>, Exception>(LedgerApiParser<std::vector<BlockchainExplorerTransaction>, TransactionsParser>())
-                        .template mapPtr<BlockchainExplorerTransaction>(getExplorerContext(), [transactionHash] (const Either<Exception, std::shared_ptr<std::vector<BlockchainExplorerTransaction>>>& result) {
+                        .map(getExplorerContext(), [transactionHash] (const Either<Exception, std::shared_ptr<std::vector<BlockchainExplorerTransaction>>>& result) {
                             if (result.isLeft()) {
                                 throw result.getLeft();
                             } else if (result.getRight()->size() == 0) {
@@ -118,18 +118,18 @@ namespace ledger {
                         });
             };
 
-            Future<void *> startLedgerApiSession() const {
+            Future<std::string> startLedgerApiSession() const {
                 return _http->GET(fmt::format("/blockchain/{}/{}/syncToken", getExplorerVersion(), getNetworkParameters().Identifier))
-                        .json().template map<void *>(getExplorerContext(), [] (const HttpRequest::JsonResult& result) {
+                        .json().map(getExplorerContext(), [] (const HttpRequest::JsonResult& result) {
                             auto& json = *std::get<1>(result);
-                            return new std::string(json["token"].GetString(), json["token"].GetStringLength());
+                            return std::string(json["token"].GetString(), json["token"].GetStringLength());
                         });
             };
 
-            Future<Unit> killLedgerApiSession(void *session) const {
-                return _http->addHeader("X-LedgerWallet-SyncToken", *((std::string *)session))
+            Future<Unit> killLedgerApiSession(const std::string& session) const {
+                return _http->addHeader("X-LedgerWallet-SyncToken", session)
                         .DEL(fmt::format("/blockchain/{}/{}/syncToken", getExplorerVersion(), getNetworkParameters().Identifier))
-                        .json().template map<Unit>(getExplorerContext(), [] (const HttpRequest::JsonResult& result) {
+                        .json().map(getExplorerContext(), [] (const HttpRequest::JsonResult& result) {
                             return unit;
                         });
             };
@@ -137,7 +137,7 @@ namespace ledger {
 
             Future<Bytes> getLedgerApiRawTransaction(const String& transactionHash) const {
                 return _http->GET(fmt::format("/blockchain/{}/{}/transactions/{}/hex", getExplorerVersion(), getNetworkParameters().Identifier, transactionHash.str()))
-                        .json().template map<Bytes>(getExplorerContext(), [transactionHash] (const HttpRequest::JsonResult& result) {
+                        .json().map(getExplorerContext(), [transactionHash] (const HttpRequest::JsonResult& result) {
                             auto& json = *std::get<1>(result);
                             if (json.GetArray().Size() == 0) {
                                 throw make_exception(api::ErrorCode::RAW_TRANSACTION_NOT_FOUND, "Unable to retrieve {}", transactionHash.str());
@@ -151,7 +151,7 @@ namespace ledger {
             Future<int64_t > getLedgerApiTimestamp() const {
                 auto delay = 60*getNetworkParameters().TimestampDelay;
                 return _http->GET(fmt::format("/timestamp"))
-                        .json().template map<int64_t>(getExplorerContext(), [delay] (const HttpRequest::JsonResult& result) {
+                        .json().map(getExplorerContext(), [delay] (const HttpRequest::JsonResult& result) {
                             auto& json = *std::get<1>(result);
                             return json["timestamp"].GetInt64() - delay;
                         });

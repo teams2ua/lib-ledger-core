@@ -57,7 +57,7 @@ namespace ledger {
             bool parseNumbersAsString = true;
             std::string addressesStr = addresses[0]->toBase58();
             return _http->GET(fmt::format("balance/{}", addressesStr))
-                    .json(parseNumbersAsString).mapPtr<BigInt>(getContext(), [addressesStr](const HttpRequest::JsonResult &result) {
+                    .json(parseNumbersAsString).map(getContext(), [addressesStr](const HttpRequest::JsonResult &result) {
                         auto &json = *std::get<1>(result);
                         if (!json.IsArray() && json.Size() == 1 && json[0].IsString()) {
                             throw make_exception(api::ErrorCode::HTTP_ERROR, "Failed to get balance for {}", addressesStr);
@@ -71,7 +71,7 @@ namespace ledger {
         NodeTezosLikeBlockchainExplorer::getFees() {
             bool parseNumbersAsString = true;
             return _http->GET("head")
-                    .json(parseNumbersAsString).mapPtr<BigInt>(getContext(), [](const HttpRequest::JsonResult &result) {
+                    .json(parseNumbersAsString).map(getContext(), [](const HttpRequest::JsonResult &result) {
                         auto &json = *std::get<1>(result);
                         //Is there a fees field ?
                         if (!json.IsObject() || !json.HasMember("fees") ||
@@ -88,7 +88,7 @@ namespace ledger {
         NodeTezosLikeBlockchainExplorer::pushLedgerApiTransaction(const std::vector<uint8_t> &transaction) {
             //injection/operation
             return _http->GET("")
-                    .json().template map<String>(getExplorerContext(), [](const HttpRequest::JsonResult &result) -> String {
+                    .json().map(getExplorerContext(), [](const HttpRequest::JsonResult &result) -> String {
                         auto &json = *std::get<1>(result);
                         if (!json.IsObject() || !json.HasMember("result") ||
                             !json["result"].IsObject()) {
@@ -103,17 +103,17 @@ namespace ledger {
                     });
         }
 
-        Future<void *> NodeTezosLikeBlockchainExplorer::startSession() {
-            return Future<void *>::successful(new std::string("", 0));
+        Future<std::string> NodeTezosLikeBlockchainExplorer::startSession() {
+            return Future<std::string>::successful("");
         }
 
-        Future<Unit> NodeTezosLikeBlockchainExplorer::killSession(void *session) {
+        Future<Unit> NodeTezosLikeBlockchainExplorer::killSession(const std::string& session) {
             return Future<Unit>::successful(unit);
         }
 
         Future<Bytes> NodeTezosLikeBlockchainExplorer::getRawTransaction(const String &transactionHash) {
             return _http->GET("")
-                    .json().template map<Bytes>(getExplorerContext(), [](const HttpRequest::JsonResult &result) -> Bytes {
+                    .json().map(getExplorerContext(), [](const HttpRequest::JsonResult &result) -> Bytes {
                         auto &json = *std::get<1>(result);
                         if (!json.IsObject() || !json.HasMember("result") ||
                             !json["result"].IsObject()) {
@@ -135,7 +135,7 @@ namespace ledger {
         FuturePtr<TezosLikeBlockchainExplorer::TransactionsBulk>
         NodeTezosLikeBlockchainExplorer::getTransactions(const std::vector<std::string> &addresses,
                                                           Option<std::string> fromBlockHash,
-                                                          Option<void *> session) {
+                                                          const std::string& session) {
             if (addresses.size() != 1) {
                 throw make_exception(api::ErrorCode::INVALID_ARGUMENT,
                                      "Can only get transactions for 1 address from Tezos Node, but got {} addresses", addresses.size());
@@ -157,8 +157,8 @@ namespace ledger {
                                                                                                             const std::shared_ptr<TransactionsBulk> &txsBulk,
                                                                                                             size_t type) -> FuturePtr<TransactionsBulk> {
                 return self->_http->GET(fmt::format("operations/{}?type={}{}", address, txTypes[type], parameters))
-                        .template json<TransactionsBulk, Exception>(LedgerApiParser<TransactionsBulk, TezosLikeTransactionsBulkParser>())
-                        .template flatMapPtr<TransactionsBulk>(self->getExplorerContext(), [=](const EitherTransactionsBulk &result) {
+                        .json<TransactionsBulk, Exception>(LedgerApiParser<TransactionsBulk, TezosLikeTransactionsBulkParser>())
+                        .flatMapPtr<TransactionsBulk>(self->getExplorerContext(), [=](const EitherTransactionsBulk &result) {
                             if (result.isLeft()) {
                                 throw result.getLeft();
                             } else {
@@ -179,7 +179,7 @@ namespace ledger {
         FuturePtr<Block> NodeTezosLikeBlockchainExplorer::getCurrentBlock() const {
             return _http->GET("head")
                     .template json<Block, Exception>(LedgerApiParser<Block, TezosLikeBlockParser>())
-                    .template mapPtr<Block>(getExplorerContext(),
+                    .map(getExplorerContext(),
                                             [](const Either<Exception, std::shared_ptr<Block>> &result) {
                                                 if (result.isLeft()) {
                                                     throw result.getLeft();

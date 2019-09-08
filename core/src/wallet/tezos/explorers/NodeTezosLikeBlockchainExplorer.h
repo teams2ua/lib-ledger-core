@@ -61,9 +61,9 @@ namespace ledger {
 
             Future<String> pushLedgerApiTransaction(const std::vector<uint8_t> &transaction) override;
 
-            Future<void *> startSession() override;
+            Future<std::string> startSession() override;
 
-            Future<Unit> killSession(void *session) override;
+            Future<Unit> killSession(const std::string& session) override;
 
             Future<Bytes> getRawTransaction(const String &transactionHash) override;
 
@@ -72,7 +72,7 @@ namespace ledger {
             FuturePtr<TezosLikeBlockchainExplorer::TransactionsBulk>
             getTransactions(const std::vector<std::string> &addresses,
                             Option<std::string> fromBlockHash = Option<std::string>(),
-                            Option<void *> session = Option<void *>()) override;
+                            const std::string& session = "") override;
 
             FuturePtr<Block> getCurrentBlock() const override;
 
