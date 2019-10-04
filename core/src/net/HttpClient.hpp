@@ -31,12 +31,9 @@
 #ifndef LEDGER_CORE_HTTPCLIENT_HPP
 #define LEDGER_CORE_HTTPCLIENT_HPP
 
-#include "../api/HttpClient.hpp"
 #include "../api/HttpMethod.hpp"
 #include "../api/HttpRequest.hpp"
-#include "../api/HttpUrlConnection.hpp"
 #include "../api/HttpReadBodyResult.hpp"
-#include "../api/ExecutionContext.hpp"
 #include "../utils/optional.hpp"
 #include <unordered_map>
 #include <memory>
@@ -45,15 +42,22 @@
 #include "../utils/Either.hpp"
 #include "HttpUrlConnectionInputStream.hpp"
 
-#include "../debug/logger.hpp"
 #include "../utils/Option.hpp"
 
 #include <rapidjson/document.h>
 #include <rapidjson/reader.h>
 
+namespace spdlog {
+    class logger;
+}
+
 namespace ledger {
     namespace core {
-
+        namespace api {
+            class HttpClient;
+            class HttpUrlConnection;
+            class ExecutionContext;
+        }
         template <typename Success, typename Failure, class Handler>
         class HttpJsonHandler;
 

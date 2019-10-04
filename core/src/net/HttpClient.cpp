@@ -29,6 +29,10 @@
  *
  */
 #include "HttpClient.hpp"
+#include "api/HttpClient.hpp"
+#include "api/HttpUrlConnection.hpp"
+#include "api/ExecutionContext.hpp"
+#include "../debug/logger.hpp"
 
 namespace ledger {
     namespace core {
