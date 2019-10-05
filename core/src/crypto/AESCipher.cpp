@@ -33,6 +33,8 @@
 #include "PBKDF2.hpp"
 #include "AES256.hpp"
 #include <cassert>
+#include "bytes/BytesReader.h"
+#include "bytes/BytesWriter.h"
 
 namespace ledger {
     namespace core {

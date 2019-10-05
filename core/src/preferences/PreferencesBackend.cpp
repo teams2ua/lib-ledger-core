@@ -30,12 +30,16 @@
  */
 
 #include "PreferencesBackend.hpp"
-#include "../utils/Exception.hpp"
-#include "../utils/LambdaRunnable.hpp"
-#include <leveldb/write_batch.h>
 #include <cstring>
-#include <leveldb/env.h>
 #include <iterator>
+#include <leveldb/write_batch.h>
+#include <leveldb/env.h>
+#include "bytes/BytesReader.h"
+#include "bytes/BytesWriter.h"
+#include "utils/Exception.hpp"
+#include "utils/LambdaRunnable.hpp"
+
+
 
 namespace ledger {
     namespace core {

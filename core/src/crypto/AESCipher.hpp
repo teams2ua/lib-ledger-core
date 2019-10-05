@@ -31,16 +31,20 @@
 
 #pragma once
 
-#include "../api/RandomNumberGenerator.hpp"
 #include <memory>
 #include <string>
 #include <ostream>
 #include <istream>
-#include "../bytes/BytesReader.h"
-#include "../bytes/BytesWriter.h"
+#include <vector>
 
 namespace ledger {
  namespace core {
+     namespace api {
+         class RandomNumberGenerator;
+     }
+     class BytesReader;
+     class BytesWriter;
+
      class AESCipher {
      public:
          AESCipher(const std::shared_ptr<api::RandomNumberGenerator>& rng, const std::string& password, const std::string &salt, uint32_t iter);

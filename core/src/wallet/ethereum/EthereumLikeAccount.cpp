@@ -47,6 +47,8 @@
 #include <wallet/pool/database/CurrenciesDatabaseHelper.hpp>
 #include <events/Event.hpp>
 #include <math/Base58.hpp>
+#include "bytes/BytesReader.h"
+#include "bytes/BytesWriter.h"
 #include <utils/Option.hpp>
 #include <utils/DateUtils.hpp>
 
