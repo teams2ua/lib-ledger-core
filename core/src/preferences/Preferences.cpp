@@ -28,8 +28,10 @@
  * SOFTWARE.
  *
  */
-#include "Preferences.hpp"
-#include "../bytes/BytesReader.h"
+#include "preferences/Preferences.hpp"
+#include "preferences/PreferencesBackend.hpp"
+#include "preferences/PreferencesEditor.hpp"
+#include "bytes/BytesReader.h"
 
 namespace ledger {
     namespace core {
@@ -93,21 +95,9 @@ namespace ledger {
         std::shared_ptr<api::PreferencesEditor> Preferences::edit() {
             return std::make_shared<PreferencesEditor>(*this);
         }
-
-        std::vector<uint8_t> Preferences::wrapKey(const std::string &key) const {
-            std::vector<uint8_t> wrappedKey(_keyPrefix.size() + key.size());
-            auto wrappedKeyIndex = 0;
-            auto prefixSize = _keyPrefix.size();
-            auto keySize = key.size();
-            for (auto i = 0; i < prefixSize; i++) {
-                wrappedKey[wrappedKeyIndex] = _keyPrefix[i];
-                wrappedKeyIndex += 1;
-            }
-            for (auto i = 0; i < keySize; i++) {
-                wrappedKey[wrappedKeyIndex] = (uint8_t)key[i];
-                wrappedKeyIndex += 1;
-            }
-            return wrappedKey;
+        
+        std::vector<uint8_t> Preferences::wrapKey(const std::string& key) const {
+            return wrapKey(_keyPrefix, key);
         }
 
         std::shared_ptr<Preferences> Preferences::getSubPreferences(std::string prefix) {
@@ -117,19 +107,6 @@ namespace ledger {
                 p.push_back((uint8_t)prefix[i]);
             }
             return std::make_shared<Preferences>(_backend, p);
-        }
-
-        void
-        Preferences::iterate(std::function<bool (leveldb::Slice&&, leveldb::Slice &&)> f, Option<std::string> begin) {
-            auto start = wrapKey(begin.getValueOr(""));
-            auto startSize = start.size();
-            _backend.iterate(start, [&] (leveldb::Slice&& k, leveldb::Slice&& value) {
-                if (startSize < k.size()) {
-                    return f(std::move(leveldb::Slice(k.data() + start.size(), k.size() - start.size())),
-                             std::move(value));
-                }
-                return true;
-            });
         }
 
         std::vector<uint8_t> Preferences::getData(const std::string &key, const std::vector<uint8_t> &fallbackValue) {
@@ -142,6 +119,22 @@ namespace ledger {
 
         std::shared_ptr<PreferencesEditor> Preferences::editor() {
             return std::make_shared<PreferencesEditor>(*this);
+        }
+
+        std::vector<uint8_t> Preferences::wrapKey(const std::vector<uint8_t>& keyPrefix, const std::string& key) {
+            std::vector<uint8_t> wrappedKey(keyPrefix.size() + key.size());
+            auto wrappedKeyIndex = 0;
+            auto prefixSize = keyPrefix.size();
+            auto keySize = key.size();
+            for (auto i = 0; i < prefixSize; i++) {
+                wrappedKey[wrappedKeyIndex] = keyPrefix[i];
+                wrappedKeyIndex += 1;
+            }
+            for (auto i = 0; i < keySize; i++) {
+                wrappedKey[wrappedKeyIndex] = (uint8_t)key[i];
+                wrappedKeyIndex += 1;
+            }
+            return wrappedKey;
         }
     }
 }

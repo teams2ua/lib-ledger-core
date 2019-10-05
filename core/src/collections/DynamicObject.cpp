@@ -30,6 +30,7 @@
  */
 
 #include "DynamicObject.hpp"
+#include "collections/DynamicArray.hpp"
 #include <cereal/cereal.hpp>
 #include <cereal/archives/portable_binary.hpp>
 #include <cereal/types/set.hpp>

@@ -46,9 +46,11 @@
 #include <utils/DateUtils.hpp>
 #include <utils/DurationUtils.h>
 #include <preferences/Preferences.hpp>
+#include "preferences/PreferencesEditor.hpp"
 #include <wallet/common/AbstractWallet.hpp>
 #include <wallet/common/database/BlockDatabaseHelper.h>
 #include <wallet/common/database/AccountDatabaseHelper.h>
+#include "utils/Serialization.hpp"
 
 namespace ledger {
     namespace core {
@@ -180,8 +182,7 @@ namespace ledger {
                         ->getInt(api::Configuration::SYNCHRONIZATION_HALF_BATCH_SIZE)
                         .value_or(10);
                 buddy->keychain = account->getKeychain();
-                buddy->savedState = buddy->preferences
-                        ->template getObject<BlockchainExplorerAccountSynchronizationSavedState>("state");
+                buddy->savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(buddy->preferences->getData("state", {}));
                 buddy->logger
                         ->info("Starting synchronization for account#{} ({}) of wallet {} at {}",
                                account->getIndex(),

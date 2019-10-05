@@ -56,6 +56,10 @@
 #include <database/soci-date.h>
 #include <database/soci-option.h>
 
+#include "utils/Serialization.hpp"
+
+#include "preferences/PreferencesEditor.hpp"
+
 namespace ledger {
     namespace core {
 
@@ -371,7 +375,7 @@ namespace ledger {
                 log->debug(" Start erasing data of account : {}", getAccountUid());
                 soci::session sql(getWallet()->getDatabase()->getPool());
                 //Update account's internal preferences (for synchronization)
-                auto savedState = getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getObject<BlockchainExplorerAccountSynchronizationSavedState>("state");
+                auto savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
                 if (savedState.nonEmpty()) {
                         //Reset batches to blocks mined before given date
                         auto previousBlock = BlockDatabaseHelper::getPreviousBlockInDatabase(sql, getWallet()->getCurrency().name, date);

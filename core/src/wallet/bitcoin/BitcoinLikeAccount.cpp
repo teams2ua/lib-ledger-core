@@ -30,8 +30,6 @@
  */
 #include "BitcoinLikeAccount.hpp"
 
-#include <database/query/QueryBuilder.h>
-
 #include <collections/functional.hpp>
 
 #include <utils/DateUtils.hpp>
@@ -49,6 +47,7 @@
 #include <wallet/bitcoin/database/BitcoinLikeTransactionDatabaseHelper.h>
 #include <wallet/common/database/OperationDatabaseHelper.h>
 #include <wallet/bitcoin/api_impl/BitcoinLikeTransactionApi.h>
+#include "preferences/PreferencesEditor.hpp"
 
 #include <wallet/common/synchronizers/AbstractBlockchainExplorerAccountSynchronizer.h>
 
@@ -62,10 +61,12 @@
 
 #include <spdlog/logger.h>
 
+#include <database/query/QueryBuilder.h>
 #include <database/soci-number.h>
 #include <database/soci-date.h>
 #include <database/soci-option.h>
 
+#include "utils/Serialization.hpp"
 
 namespace ledger {
     namespace core {
@@ -684,7 +685,7 @@ namespace ledger {
             log->debug(" Start erasing data of account : {}", getAccountUid());
             soci::session sql(getWallet()->getDatabase()->getPool());
             //Update account's internal preferences (for synchronization)
-            auto savedState = getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getObject<BlockchainExplorerAccountSynchronizationSavedState>("state");
+            auto savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
             if (savedState.nonEmpty()) {
                 //Reset batches to blocks mined before given date
                 auto previousBlock = BlockDatabaseHelper::getPreviousBlockInDatabase(sql, getWallet()->getCurrency().name, date);

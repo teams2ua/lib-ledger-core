@@ -37,6 +37,7 @@
 #include <wallet/common/database/BlockDatabaseHelper.h>
 #include <database/soci-date.h>
 #include <bitcoin/bech32/Bech32Parameters.h>
+#include "preferences/PreferencesBackend.hpp"
 
 namespace ledger {
     namespace core {

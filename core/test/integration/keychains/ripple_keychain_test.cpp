@@ -35,6 +35,8 @@
 #include <src/utils/optional.hpp>
 #include "keychain_test_helper.h"
 #include "../BaseFixture.h"
+#include "preferences/PreferencesBackend.hpp"
+
 using namespace std;
 class RippleKeychains : public BaseFixture {
 public:

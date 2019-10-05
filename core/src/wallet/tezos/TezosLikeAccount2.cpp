@@ -55,6 +55,9 @@
 #include <collections/vector.hpp>
 #include <database/query/ConditionQueryFilter.h>
 
+#include "utils/Serialization.hpp"
+#include "preferences/PreferencesEditor.hpp"
+
 using namespace soci;
 
 namespace ledger {
@@ -66,7 +69,7 @@ namespace ledger {
             log->debug(" Start erasing data of account : {}", getAccountUid());
             soci::session sql(getWallet()->getDatabase()->getPool());
             //Update account's internal preferences (for synchronization)
-            auto savedState = getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getObject<BlockchainExplorerAccountSynchronizationSavedState>("state");
+            auto savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
             if (savedState.nonEmpty()) {
                 //Reset batches to blocks mined before given date
                 auto previousBlock = BlockDatabaseHelper::getPreviousBlockInDatabase(sql,

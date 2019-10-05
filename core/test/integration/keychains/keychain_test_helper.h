@@ -36,6 +36,7 @@
 #include <api/EthereumLikeNetworkParameters.hpp>
 #include <api/Currency.hpp>
 #include "../BaseFixture.h"
+#include "preferences/PreferencesBackend.hpp"
 
 
 struct KeychainTestData {

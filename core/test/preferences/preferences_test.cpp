@@ -28,13 +28,14 @@
  * SOFTWARE.
  *
  */
-
+#include <sstream>
 #include <gtest/gtest.h>
 #include <EventLooper.hpp>
 #include <EventThread.hpp>
 #include <NativeThreadDispatcher.hpp>
-#include <ledger/core/preferences/PreferencesBackend.hpp>
-#include <ledger/core/utils/Option.hpp>
+#include <preferences/PreferencesBackend.hpp>
+#include <preferences/PreferencesEditor.hpp>
+#include <utils/Option.hpp>
 #include <NativePathResolver.hpp>
 #include <fstream>
 #include <OpenSSLRandomNumberGenerator.hpp>
@@ -110,8 +111,46 @@ TEST_F(PreferencesTest, StoreAndGetWithPreferencesAPI) {
     resolver->clean();
 }
 
+void iterate(
+    std::shared_ptr<ledger::core::PreferencesBackend>& backend,
+    const std::vector<uint8_t>& prefix,
+    std::function<bool(leveldb::Slice&&, leveldb::Slice&&)> f,
+    ledger::core::Option<std::string> begin = ledger::core::Option<std::string>()) {
+    auto start = ledger::core::Preferences::wrapKey(prefix, begin.getValueOr(""));
+    auto startSize = start.size();
+    backend->iterate(start, [&](leveldb::Slice&& k, leveldb::Slice&& value) {
+        if (startSize < k.size()) {
+            return f(std::move(leveldb::Slice(k.data() + start.size(), k.size() - start.size())),
+                std::move(value));
+        }
+        return true;
+        });
+}
+
+template <typename T>
+void iterate(
+    std::shared_ptr<ledger::core::PreferencesBackend>& backend,
+    const std::vector<uint8_t>& prefix,
+    std::function<bool(leveldb::Slice&& key, const T& value)> f,
+    ledger::core::Option<std::string> begin = ledger::core::Option<std::string>()) {
+    iterate(backend, prefix, [f](leveldb::Slice&& key, leveldb::Slice&& value) {
+        T object;
+        try {
+            std::stringstream stream(std::string(&value.data()[0], &value.data()[0] + value.size()), std::stringstream::in | std::stringstream::binary);
+            ::cereal::PortableBinaryInputArchive archive(stream);
+            archive(object);
+        }
+        catch (const std::exception& ex) {
+            return true;
+        }
+        return f(std::move(key), object);
+        }, begin);
+}
+
 TEST_F(PreferencesTest, IterateThroughMembers) {
-    auto preferences = backend->getPreferences("my_test_preferences");
+    std::string prefixName("my_test_preferences");
+    auto preferences = backend->getPreferences(prefixName);
+    auto prefix = std::vector<uint8_t>(prefixName.data(), prefixName.data() + prefixName.size());
     auto otherPreferences = backend->getPreferences("my_other_test_preferences");
 
     dispatcher->getSerialExecutionContext("not_my_worker")->execute(make_runnable([=] () {
@@ -152,7 +191,7 @@ TEST_F(PreferencesTest, IterateThroughMembers) {
     dispatcher->getMainExecutionContext()->delay(make_runnable([=] () {
         std::set<std::string> addresses({"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
                                          "10", "11", "12", "13", "14", "15", "16"});
-        preferences->iterate([addresses] (leveldb::Slice&& key, leveldb::Slice&& value) {
+        iterate(backend, prefix, [addresses] (leveldb::Slice&& key, leveldb::Slice&& value) {
             EXPECT_NE(addresses.find(key.ToString()), addresses.end());
             return true;
         }, ledger::core::Option<std::string>("address:"));
@@ -180,7 +219,9 @@ struct MyClass
 };
 
 TEST_F(PreferencesTest, IterateThroughObjectMembers) {
-    auto preferences = backend->getPreferences("my_test_preferences_array");
+    std::string prefixName("my_test_preferences_array");
+    auto preferences = backend->getPreferences(prefixName);
+    auto prefix = std::vector<uint8_t>(prefixName.data(), prefixName.data() + prefixName.size());
     auto otherPreferences = backend->getPreferences("my_other_test_preferences");
 
     MyClass obj1;
@@ -203,7 +244,7 @@ TEST_F(PreferencesTest, IterateThroughObjectMembers) {
 
     // Assume that 100ms should be enough to persist data
     dispatcher->getMainExecutionContext()->delay(make_runnable([&] () {
-        preferences->iterate<MyClass>([=] (leveldb::Slice&& key, const MyClass& value) {
+        iterate<MyClass>(backend, prefix, [=] (leveldb::Slice&& key, const MyClass& value) {
             if (key.ToString() == "0") {
                 EXPECT_EQ(obj1.x, value.x);
                 EXPECT_EQ(obj1.y, value.y);

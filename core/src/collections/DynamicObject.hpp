@@ -31,18 +31,16 @@
 #ifndef LEDGER_CORE_DYNAMICOBJECT_HPP
 #define LEDGER_CORE_DYNAMICOBJECT_HPP
 
-#include "../api/DynamicArray.hpp"
 #include "../api/DynamicObject.hpp"
-#include "../api/DynamicType.hpp"
 #include <cereal/cereal.hpp>
 #include "../collections/collections.hpp"
 #include "DynamicValue.hpp"
-#include "DynamicArray.hpp"
 #include <cereal/types/map.hpp>
 #include <cereal/types/unordered_map.hpp>
 
 namespace ledger {
     namespace core {
+        class DynamicArray;
         class DynamicObject : public api::DynamicObject, public std::enable_shared_from_this<DynamicObject> {
         public:
             DynamicObject() : _readOnly(false) {}

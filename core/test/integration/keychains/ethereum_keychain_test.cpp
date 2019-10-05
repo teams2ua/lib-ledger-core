@@ -37,6 +37,7 @@
 #include <src/utils/DerivationPath.hpp>
 #include <src/utils/optional.hpp>
 #include "keychain_test_helper.h"
+#include "preferences/PreferencesBackend.hpp"
 #include "../BaseFixture.h"
 #include <iostream>
 using namespace std;

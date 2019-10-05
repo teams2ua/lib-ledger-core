@@ -31,16 +31,9 @@
 #ifndef LEDGER_CORE_PREFERENCES_HPP
 #define LEDGER_CORE_PREFERENCES_HPP
 
-#include "../api/Preferences.hpp"
-#include "../api/PreferencesEditor.hpp"
-#include "PreferencesBackend.hpp"
-#include "PreferencesEditor.hpp"
-#include "../utils/Option.hpp"
-#include <cereal/cereal.hpp>
-#include <cereal/archives/portable_binary.hpp>
-#include <cereal/types/set.hpp>
-#include <boost/iostreams/device/array.hpp>
-#include <boost/iostreams/stream.hpp>
+#include "api/Preferences.hpp"
+#include "api/PreferencesEditor.hpp"
+#include "utils/Option.hpp"
 
 namespace ledger {
     namespace core {
@@ -69,41 +62,9 @@ namespace ledger {
 
             std::vector<uint8_t> getData(const std::string &key, const std::vector<uint8_t> &fallbackValue) override;
 
-            template <typename T>
-            Option<T> getObject(const std::string& key) {
-                auto data = getData(key, {});
-                if (data.size() == 0) {
-                    return Option<T>();
-                }
-                T object;
-                boost::iostreams::array_source my_vec_source(reinterpret_cast<char*>(&data[0]), data.size());
-                boost::iostreams::stream<boost::iostreams::array_source> is(my_vec_source);
-                ::cereal::PortableBinaryInputArchive archive(is);
-                archive(object);
-                return Option<T>(object);
-            };
-
-            void iterate(std::function<bool (leveldb::Slice&&, leveldb::Slice&&)> f, Option<std::string> begin = Option<std::string>());
-
-            template <typename T>
-            void iterate(std::function<bool (leveldb::Slice&& key, const T& value)> f, Option<std::string> begin = Option<std::string>()) {
-                iterate([f] (leveldb::Slice&& key, leveldb::Slice&& value) {
-                    T object;
-                    try {
-                        boost::iostreams::array_source my_vec_source(reinterpret_cast<const char *>(&value.data()[0]),
-                                                                     value.size());
-                        boost::iostreams::stream<boost::iostreams::array_source> is(my_vec_source);
-                        ::cereal::PortableBinaryInputArchive archive(is);
-                        archive(object);
-                    } catch (const std::exception& ex) {
-                        return true;
-                    }
-                    return f(std::move(key), object);
-                }, begin);
-            }
-
             std::shared_ptr<Preferences> getSubPreferences(std::string prefix);
 
+            static std::vector<uint8_t> wrapKey(const std::vector<uint8_t>& keyPrefix, const std::string& key);
         protected:
             std::vector<uint8_t> wrapKey(const std::string& key) const;
 
