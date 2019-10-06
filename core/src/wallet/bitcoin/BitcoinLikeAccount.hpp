@@ -31,30 +31,26 @@
 #ifndef LEDGER_CORE_BITCOINLIKEACCOUNT_HPP
 #define LEDGER_CORE_BITCOINLIKEACCOUNT_HPP
 
-#include "BitcoinLikeWallet.hpp"
-#include <api/BitcoinLikeAccount.hpp>
-#include "explorers/BitcoinLikeBlockchainExplorer.hpp"
-#include <wallet/bitcoin/keychains/BitcoinLikeKeychain.hpp>
-#include <soci.h>
-#include <preferences/Preferences.hpp>
-#include <wallet/common/AbstractAccount.hpp>
-#include <api/Amount.hpp>
-#include <api/AmountCallback.hpp>
-#include <api/OperationListCallback.hpp>
-#include <api/BitcoinLikeOutput.hpp>
-#include <api/BitcoinLikePickingStrategy.hpp>
-#include <api/BitcoinLikeTransactionRequest.hpp>
-#include <api/BitcoinLikePreparedTransaction.hpp>
-#include <api/BigIntListCallback.hpp>
-#include <wallet/bitcoin/types.h>
-#include <wallet/bitcoin/transaction_builders/BitcoinLikeUtxoPicker.h>
-
-#include <wallet/bitcoin/synchronizers/BitcoinLikeAccountSynchronizer.hpp>
+#include "api/BitcoinLikeAccount.hpp"
+#include "wallet/common/AbstractAccount.hpp"
+#include <mutex>
 
 namespace ledger {
     namespace core {
+        namespace api {
+            class EventBus;
+            class BitcoinLikeOutput;
+            class BigIntListCallback;
+        }
+
         class Operation;
         class BitcoinLikeUtxoPicker;
+        class BitcoinLikeKeychain;
+        class BitcoinLikeBlockchainExplorer;
+        class BitcoinLikeAccountSynchronizer;
+        class BitcoinLikeBlockchainObserver;
+        class BitcoinLikeUtxoPicker;
+        
         class BitcoinLikeAccount : public api::BitcoinLikeAccount, public AbstractAccount {
         public:
             static const int FLAG_NEW_TRANSACTION = 0x01;

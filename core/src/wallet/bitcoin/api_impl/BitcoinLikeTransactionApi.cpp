@@ -34,11 +34,13 @@
 #include <wallet/common/Amount.h>
 #include <wallet/common/AbstractAccount.hpp>
 #include <wallet/bitcoin/scripts/BitcoinLikeScript.h>
+#include <wallet/bitcoin/keychains/BitcoinLikeKeychain.hpp>
 #include <wallet/bitcoin/networks.hpp>
 #include <crypto/HASH160.hpp>
 #include <crypto/SHA512.hpp>
 #include <math/Base58.hpp>
 #include <api/KeychainEngines.hpp>
+#include <api/BitcoinLikeTransactionBuilder.hpp>
 
 namespace ledger {
     namespace core {

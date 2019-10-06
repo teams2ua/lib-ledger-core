@@ -41,12 +41,17 @@
 #include <wallet/bitcoin/api_impl/BitcoinLikeOutputApi.h>
 #include <api/BitcoinLikeOutputListCallback.hpp>
 #include <api/BitcoinLikeInput.hpp>
+#include <api/BigInt.hpp>
+#include <api/BigIntListCallback.hpp>
 #include <wallet/common/database/BlockDatabaseHelper.h>
 #include <wallet/bitcoin/transaction_builders/BitcoinLikeTransactionBuilder.h>
+#include <wallet/bitcoin/synchronizers/BitcoinLikeAccountSynchronizer.hpp>
 #include <wallet/bitcoin/transaction_builders/BitcoinLikeStrategyUtxoPicker.h>
 #include <wallet/bitcoin/database/BitcoinLikeTransactionDatabaseHelper.h>
 #include <wallet/common/database/OperationDatabaseHelper.h>
 #include <wallet/bitcoin/api_impl/BitcoinLikeTransactionApi.h>
+#include <wallet/bitcoin/observers/BitcoinLikeBlockchainObserver.hpp>
+#include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp>
 #include "preferences/PreferencesEditor.hpp"
 
 #include <wallet/common/synchronizers/AbstractBlockchainExplorerAccountSynchronizer.h>
@@ -706,8 +711,8 @@ namespace ledger {
         }
 
         void BitcoinLikeAccount::getFees(const std::shared_ptr<api::BigIntListCallback> & callback) {
-            return _explorer->getFees().callback(getContext(), callback);;
+            Future<std::vector<std::shared_ptr<api::BigInt>>> future = _explorer->getFees();
+            future.callback(getContext(), callback);
         }
-
     }
 }
