@@ -34,6 +34,7 @@
 #include <crypto/SHA256.hpp>
 #include <fmt/format.h>
 #include <utils/DateUtils.hpp>
+#include "collections/strings.hpp"
 
 using namespace soci;
 

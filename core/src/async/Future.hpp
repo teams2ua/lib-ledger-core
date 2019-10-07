@@ -42,6 +42,7 @@
 #include "traits/callback_traits.hpp"
 #include "api/Error.hpp"
 #include "traits/shared_ptr_traits.hpp"
+#include "async/Promise.hpp"
 
 namespace ledger {
     namespace core {
@@ -273,7 +274,7 @@ namespace ledger {
 
             static Future<T> async(const Context& context, std::function<T ()> f) {
                 if (!context) {
-                    throw make_exception(api::ErrorCode::ILLEGAL_STATE, "Context has been released before async operation");
+                    throw Exception(api::ErrorCode::ILLEGAL_STATE, "Context has been released before async operation");
                 }
                 auto deffer = make_deffered();
                 context->execute(make_runnable([deffer, f] () {

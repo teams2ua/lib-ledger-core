@@ -47,60 +47,10 @@
 #include <wallet/common/explorers/AbstractBlockchainExplorer.h>
 #include <wallet/tezos/keychains/TezosLikeKeychain.h>
 #include <api/TezosOperationTag.hpp>
+#include "wallet/tezos/explorers/TezosLikeBlockchainExplorerTransaction.h"
 
 namespace ledger {
     namespace core {
-
-        struct TezosLikeBlockchainExplorerOriginatedAccount {
-            TezosLikeBlockchainExplorerOriginatedAccount(const std::string &a = "",
-                                                         bool isSpendable = false,
-                                                         bool isDelegatable = false) :
-                    address(a),
-                    spendable(isSpendable),
-                    delegatable(isDelegatable) {
-            };
-
-            std::string address;
-            bool spendable;
-            bool delegatable;
-        };
-
-        struct TezosLikeBlockchainExplorerTransaction {
-            std::string hash;
-            std::chrono::system_clock::time_point receivedAt;
-            BigInt value;
-            BigInt fees;
-            BigInt gas_limit;
-            BigInt storage_limit;
-            std::string receiver;
-            std::string sender;
-            Option<Block> block;
-            uint64_t confirmations;
-            api::TezosOperationTag type;
-            Option<std::string> publicKey;
-            Option<TezosLikeBlockchainExplorerOriginatedAccount> originatedAccount;
-            TezosLikeBlockchainExplorerTransaction() {
-                confirmations = 0;
-                type = api::TezosOperationTag::OPERATION_TAG_NONE;
-            }
-
-            TezosLikeBlockchainExplorerTransaction(const TezosLikeBlockchainExplorerTransaction &cpy) {
-                this->hash = cpy.hash;
-                this->receivedAt = cpy.receivedAt;
-                this->value = cpy.value;
-                this->fees = cpy.fees;
-                this->gas_limit = cpy.gas_limit;
-                this->storage_limit = cpy.storage_limit;
-                this->receiver = cpy.receiver;
-                this->sender = cpy.sender;
-                this->block = cpy.block;
-                this->confirmations = cpy.confirmations;
-                this->type = cpy.type;
-                this->publicKey = cpy.publicKey;
-                this->originatedAccount = cpy.originatedAccount;
-            }
-
-        };
 
         class TezosLikeBlockchainExplorer : public ConfigurationMatchable,
                                             public AbstractBlockchainExplorer<TezosLikeBlockchainExplorerTransaction> {

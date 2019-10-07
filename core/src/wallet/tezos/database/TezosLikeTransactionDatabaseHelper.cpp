@@ -83,7 +83,7 @@ namespace ledger {
             }
             auto values = strings::split(row.get<std::string>(11), ":");
             if (values.size() == 3) {
-                tx.originatedAccount = TezosLikeBlockchainExplorerOriginatedAccount(values[0], static_cast<bool>(std::stoi(values[1])), static_cast<bool>(std::stoi(values[2])));
+                tx.originatedAccount = TezosLikeBlockchainExplorerOriginatedAccount{ values[0], static_cast<bool>(std::stoi(values[1])), static_cast<bool>(std::stoi(values[2])) };
             }
             if (row.get_indicator(12) != i_null) {
                 TezosLikeBlockchainExplorer::Block block;

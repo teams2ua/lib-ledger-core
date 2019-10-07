@@ -40,6 +40,8 @@
 
 namespace ledger {
     namespace core {
+        class BitcoinLikeBlockchainExplorer;
+
         class BitcoinLikeWritableInputApi : public api::BitcoinLikeInput {
         public:
             BitcoinLikeWritableInputApi(

@@ -32,6 +32,7 @@
 #include "database/OperationDatabaseHelper.h"
 #include <utils/Exception.hpp>
 #include <fmt/format.h>
+
 namespace ledger {
     namespace core {
 

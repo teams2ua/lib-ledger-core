@@ -37,8 +37,14 @@
 #include <api/OperationType.hpp>
 #include <wallet/common/Operation.h>
 #include <api_impl/BigIntImpl.hpp>
+
 namespace ledger {
     namespace core {
+        namespace api {
+            class Currency;
+        }
+
+        class ERC20Transaction;
 
         class ERC20LikeOperation : public api::ERC20LikeOperation {
         public:
@@ -65,6 +71,7 @@ namespace ledger {
             std::string getETHOperationUid();
             int32_t getStatus() override ;
             std::experimental::optional<int64_t> getBlockHeight() override;
+
             ERC20LikeOperation &setHash(const std::string &hash) {
                 _hash = hash;
                 return *this;

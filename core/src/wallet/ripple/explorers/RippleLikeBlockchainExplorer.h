@@ -48,40 +48,10 @@
 #include <wallet/common/Block.h>
 #include <wallet/common/explorers/AbstractBlockchainExplorer.h>
 #include <wallet/ripple/keychains/RippleLikeKeychain.h>
+#include "wallet/ripple/explorers/RippleLikeBlockchainExplorerTransaction.h"
 
 namespace ledger {
     namespace core {
-
-        struct RippleLikeBlockchainExplorerTransaction {
-            std::string hash;
-            std::chrono::system_clock::time_point receivedAt;
-            BigInt value;
-            BigInt fees;
-            BigInt sequence;
-            std::string receiver;
-            std::string sender;
-            Option<Block> block;
-            uint64_t confirmations;
-            std::vector<api::RippleLikeMemo> memos;
-
-            RippleLikeBlockchainExplorerTransaction() {
-                confirmations = 0;
-            }
-
-            RippleLikeBlockchainExplorerTransaction(const RippleLikeBlockchainExplorerTransaction &cpy) {
-                this->block = cpy.block;
-                this->hash = cpy.hash;
-                this->receivedAt = cpy.receivedAt;
-                this->confirmations = cpy.confirmations;
-                this->fees = cpy.fees;
-                this->sequence = cpy.sequence;
-                this->receiver = cpy.receiver;
-                this->sender = cpy.sender;
-                this->value = cpy.value;
-                this->memos = cpy.memos;
-            }
-
-        };
 
         class RippleLikeBlockchainExplorer : public ConfigurationMatchable,
                                              public AbstractBlockchainExplorer<RippleLikeBlockchainExplorerTransaction> {

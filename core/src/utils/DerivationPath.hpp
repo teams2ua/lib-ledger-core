@@ -33,10 +33,13 @@
 
 #include <string>
 #include <vector>
-#include "Exception.hpp"
+
+#include "utils/Option.hpp"
 
 namespace ledger {
     namespace core {
+        class DerivationPath;
+
         class DerivationPath {
         public:
             explicit DerivationPath(const std::string& path);

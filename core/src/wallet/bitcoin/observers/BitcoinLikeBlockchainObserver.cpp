@@ -58,7 +58,7 @@ namespace ledger {
             }
         }
 
-        void BitcoinLikeBlockchainObserver::putBlock(const BitcoinLikeBlockchainExplorer::Block& block) {
+        void BitcoinLikeBlockchainObserver::putBlock(const Block& block) {
             std::lock_guard<std::mutex> lock(_lock);
             for (const auto& account : _accounts) {
                 account->run([account, block] () {

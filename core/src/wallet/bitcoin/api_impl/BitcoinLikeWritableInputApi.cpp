@@ -32,6 +32,7 @@
 #include "BitcoinLikeWritableInputApi.h"
 #include <api/BinaryCallback.hpp>
 #include "BitcoinLikeScriptApi.h"
+#include "wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp"
 
 namespace ledger {
     namespace core {

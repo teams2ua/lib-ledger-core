@@ -36,17 +36,16 @@
 #include <api/WalletType.hpp>
 #include <chrono>
 #include <vector>
+#include <memory>
 #include <math/BigInt.h>
 #include <utils/Option.hpp>
 #include "TrustIndicator.h"
-#include <memory>
-#include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp>
-#include <wallet/ethereum/explorers/EthereumLikeBlockchainExplorer.h>
-#include <wallet/ripple/explorers/RippleLikeBlockchainExplorer.h>
-#include <wallet/tezos/explorers/TezosLikeBlockchainExplorer.h>
 #include <api/OperationType.hpp>
-#include <api/Operation.hpp>
 #include "Block.h"
+#include "wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorerTransaction.h"
+#include "wallet/ethereum/explorers/EthereumLikeBlockchainExplorerTransaction.h"
+#include "wallet/ripple/explorers/RippleLikeBlockchainExplorerTransaction.h"
+#include "wallet/tezos/explorers/TezosLikeBlockchainExplorerTransaction.h"
 
 namespace ledger {
     namespace core {
@@ -68,14 +67,12 @@ namespace ledger {
             Option<EthereumLikeBlockchainExplorerTransaction> ethereumTransaction;
             Option<RippleLikeBlockchainExplorerTransaction> rippleTransaction;
             Option<TezosLikeBlockchainExplorerTransaction> tezosTransaction;
-            Operation() {};
             void refreshUid();
-        private:
-
         };
     }
 
 }
+
 
 
 #endif //LEDGER_CORE_OPERATION_H

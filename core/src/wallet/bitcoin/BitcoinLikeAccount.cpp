@@ -36,7 +36,6 @@
 
 #include <wallet/common/Operation.h>
 #include <wallet/bitcoin/database/BitcoinLikeUTXODatabaseHelper.h>
-#include <wallet/bitcoin/database/BitcoinLikeBlockDatabaseHelper.h>
 #include <wallet/common/database/OperationDatabaseHelper.h>
 #include <wallet/bitcoin/api_impl/BitcoinLikeOutputApi.h>
 #include <api/BitcoinLikeOutputListCallback.hpp>
@@ -307,7 +306,7 @@ namespace ledger {
             auto self = std::static_pointer_cast<BitcoinLikeAccount>(shared_from_this());
 
             //Update current block height (needed to compute trust level)
-            _explorer->getCurrentBlock().onComplete(getContext(), [self] (const TryPtr<BitcoinLikeBlockchainExplorer::Block>& block) mutable {
+            _explorer->getCurrentBlock().onComplete(getContext(), [self] (const TryPtr<Block>& block) mutable {
                 if (block.isSuccess()) {
                     self->_currentBlockHeight = block.getValue()->height;
                 }
@@ -365,14 +364,13 @@ namespace ledger {
             getUTXOCount().callback(getMainExecutionContext(), callback);
         }
 
-        bool BitcoinLikeAccount::putBlock(soci::session &sql, const BitcoinLikeBlockchainExplorer::Block& block) {
+        bool BitcoinLikeAccount::putBlock(soci::session &sql, const Block& block) {
             Block abstractBlock;
             abstractBlock.hash = block.hash;
             abstractBlock.currencyName = getWallet()->getCurrency().name;
             abstractBlock.height = block.height;
             abstractBlock.time = block.time;
             if (BlockDatabaseHelper::putBlock(sql, abstractBlock)) {
-                BitcoinLikeBlockDatabaseHelper::putBlock(sql, block);
                 emitNewBlockEvent(abstractBlock);
                 return true;
             }

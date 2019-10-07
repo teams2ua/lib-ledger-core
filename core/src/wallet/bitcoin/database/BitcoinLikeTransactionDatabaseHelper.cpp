@@ -36,6 +36,8 @@
 #include <database/soci-number.h>
 
 #include <iostream>
+#include "wallet/common/Block.h"
+
 using namespace std;
 
 using namespace soci;
@@ -57,7 +59,7 @@ namespace ledger {
         std::string BitcoinLikeTransactionDatabaseHelper::putTransaction(soci::session &sql,
                                                                   const std::string& accountUid,
                                                                   const BitcoinLikeBlockchainExplorerTransaction &tx) {
-            auto blockUid = tx.block.map<std::string>([] (const BitcoinLikeBlockchainExplorer::Block& block) {
+            auto blockUid = tx.block.map<std::string>([] (const Block& block) {
                                    return block.getUid();
                                });
 
@@ -188,7 +190,7 @@ namespace ledger {
             out.receivedAt = row.get<std::chrono::system_clock::time_point>(2);
             out.lockTime = (uint64_t) row.get<int>(3);
             if (row.get_indicator(4) != i_null) {
-                BitcoinLikeBlockchainExplorer::Block block;
+                Block block;
                 block.hash = row.get<std::string>(4);
                 block.height = get_number<uint64_t>(row, 5);
                 block.time = row.get<std::chrono::system_clock::time_point>(6);

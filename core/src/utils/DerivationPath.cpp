@@ -29,6 +29,7 @@
  *
  */
 #include "DerivationPath.hpp"
+#include "utils/Exception.hpp"
 #include <string>
 #include <cstdlib>
 #include "collections/vector.hpp"

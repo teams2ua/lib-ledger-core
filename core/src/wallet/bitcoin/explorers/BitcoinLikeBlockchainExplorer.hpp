@@ -35,78 +35,18 @@
 #include <chrono>
 #include <vector>
 
-#include <api/Error.hpp>
 #include <api/BigInt.hpp>
 #include <async/Future.hpp>
-#include <collections/collections.hpp>
-#include <math/BigInt.h>
 #include <utils/ConfigurationMatchable.h>
-#include <utils/optional.hpp>
 #include <utils/Option.hpp>
 #include <wallet/common/explorers/AbstractBlockchainExplorer.h>
+#include "wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorerTransaction.h"
 
 namespace ledger {
     namespace core {
-        struct BitcoinLikeBlockchainExplorerInput {
-            uint64_t index;
-            Option<BigInt> value;
-            Option<std::string> previousTxHash;
-            Option<uint32_t> previousTxOutputIndex;
-            Option<std::string> address;
-            Option<std::string> signatureScript;
-            Option<std::string> coinbase;
-            uint32_t sequence;
-
-            BitcoinLikeBlockchainExplorerInput() {
-                sequence = 0xFFFFFFFF;
-            };
-        };
-
-        struct BitcoinLikeBlockchainExplorerOutput {
-            uint64_t index;
-            std::string transactionHash;
-            BigInt value;
-            Option<std::string> address;
-            std::string script;
-            std::string time;
-            Option<uint64_t> blockHeight;
-
-            BitcoinLikeBlockchainExplorerOutput() = default;
-        };
-
-        struct BitcoinLikeBlockchainExplorerTransaction {
-            uint32_t  version;
-            std::string hash;
-            std::chrono::system_clock::time_point receivedAt;
-            uint64_t lockTime;
-            Option<Block> block;
-            std::vector<BitcoinLikeBlockchainExplorerInput> inputs;
-            std::vector<BitcoinLikeBlockchainExplorerOutput> outputs;
-            Option<BigInt> fees;
-            uint64_t confirmations;
-
-            BitcoinLikeBlockchainExplorerTransaction() {
-                version = 1;
-                confirmations = -1;
-            }
-
-            BitcoinLikeBlockchainExplorerTransaction(const BitcoinLikeBlockchainExplorerTransaction &cpy) {
-                this->confirmations = cpy.confirmations;
-                this->version = cpy.version;
-                this->outputs = cpy.outputs;
-                this->inputs = cpy.inputs;
-                this->receivedAt = cpy.receivedAt;
-                this->lockTime = cpy.lockTime;
-                this->fees = cpy.fees;
-                this->hash = cpy.hash;
-                this->block = cpy.block;
-            }
-        };
-
         class BitcoinLikeBlockchainExplorer : public ConfigurationMatchable,
                                               public AbstractBlockchainExplorer<BitcoinLikeBlockchainExplorerTransaction> {
         public:
-            typedef ledger::core::Block Block;
             BitcoinLikeBlockchainExplorer(const std::shared_ptr<api::DynamicObject>& configuration,
                                           const std::vector<std::string> &matchableKeys);
 

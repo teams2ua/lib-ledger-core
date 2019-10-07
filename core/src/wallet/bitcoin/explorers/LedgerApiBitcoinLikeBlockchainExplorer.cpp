@@ -81,7 +81,7 @@ namespace ledger {
             return getLedgerApiTransactions(addresses, fromBlockHash, session);
         }
 
-        FuturePtr<BitcoinLikeBlockchainExplorer::Block> LedgerApiBitcoinLikeBlockchainExplorer::getCurrentBlock() const {
+        FuturePtr<Block> LedgerApiBitcoinLikeBlockchainExplorer::getCurrentBlock() const {
             return getLedgerApiCurrentBlock();
         }
 

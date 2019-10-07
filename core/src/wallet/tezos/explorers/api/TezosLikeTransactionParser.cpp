@@ -164,7 +164,7 @@ namespace ledger {
                 } else if ((currentObject == "destination" || currentObject == "delegate") && _lastKey == "tz") {
                     _transaction->receiver = value;
                 } else if (currentObject == "tz1" && _lastKey == "tz") {
-                    _transaction->originatedAccount = TezosLikeBlockchainExplorerOriginatedAccount(value);
+                    _transaction->originatedAccount = TezosLikeBlockchainExplorerOriginatedAccount{ value };
                 } else if (_lastKey == "gas_limit") {
                     _transaction->gas_limit = BigInt::fromString(value);
                 } else if (_lastKey == "storage_limit") {

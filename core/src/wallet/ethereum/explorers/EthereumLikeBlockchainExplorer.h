@@ -47,68 +47,10 @@
 #include <wallet/common/Block.h>
 #include <wallet/common/explorers/AbstractBlockchainExplorer.h>
 #include <wallet/ethereum/keychains/EthereumLikeKeychain.hpp>
+#include "wallet/ethereum/explorers/EthereumLikeBlockchainExplorerTransaction.h"
+
 namespace ledger {
     namespace core {
-
-        struct ERC20Transaction {
-            std::string from;
-            std::string to;
-            std::string contractAddress;
-            BigInt value;
-            api::OperationType type;
-        };
-
-        struct InternalTx {
-            std::string from;
-            std::string to;
-            BigInt value;
-            BigInt gasLimit;
-            Option<BigInt> gasUsed;
-            api::OperationType type;
-            std::vector<uint8_t> inputData;
-        };
-
-        struct EthereumLikeBlockchainExplorerTransaction {
-            std::string hash;
-            std::chrono::system_clock::time_point receivedAt;
-            BigInt value;
-            BigInt gasPrice;
-            BigInt gasLimit;
-            Option<BigInt> gasUsed;
-            std::string receiver;
-            std::string sender;
-            uint64_t nonce;
-            Option<Block> block;
-            uint64_t confirmations;
-            std::vector<uint8_t> inputData;
-            uint64_t status;
-            std::vector<InternalTx> internalTransactions;
-            std::vector<ERC20Transaction> erc20Transactions;
-            EthereumLikeBlockchainExplorerTransaction() {
-                nonce = 0;
-                confirmations = 0;
-                status = 0;
-            }
-
-            EthereumLikeBlockchainExplorerTransaction(const EthereumLikeBlockchainExplorerTransaction &cpy) {
-                this->block = cpy.block;
-                this->hash = cpy.hash;
-                this->receivedAt = cpy.receivedAt;
-                this->confirmations = cpy.confirmations;
-                this->gasUsed = cpy.gasUsed;
-                this->gasLimit = cpy.gasLimit;
-                this->gasPrice = cpy.gasPrice;
-                this->inputData = cpy.inputData;
-                this->receiver = cpy.receiver;
-                this->sender = cpy.sender;
-                this->nonce = cpy.nonce;
-                this->value = cpy.value;
-                this->status = cpy.status;
-                this->internalTransactions = cpy.internalTransactions;
-                this->erc20Transactions = cpy.erc20Transactions;
-            }
-
-        };
 
         class EthereumLikeBlockchainExplorer : public ConfigurationMatchable,
                                                public AbstractBlockchainExplorer<EthereumLikeBlockchainExplorerTransaction> {

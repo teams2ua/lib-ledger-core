@@ -38,10 +38,12 @@
 #include <debug/logger.hpp>
 #include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp>
 #include <wallet/common/observers/AbstractBlockchainObserver.h>
+#include "wallet/common/Block.h"
+
 namespace ledger {
     namespace core {
         class BitcoinLikeAccount;
-        using BitcoinBlockchainObserver = AbstractBlockchainObserver<BitcoinLikeAccount, BitcoinLikeBlockchainExplorerTransaction, BitcoinLikeBlockchainExplorer::Block>;
+        using BitcoinBlockchainObserver = AbstractBlockchainObserver<BitcoinLikeAccount, BitcoinLikeBlockchainExplorerTransaction, Block>;
         class BitcoinLikeBlockchainObserver : public BitcoinBlockchainObserver,
                                               public DedicatedContext,
                                               public ConfigurationMatchable {
@@ -54,7 +56,7 @@ namespace ledger {
 
         protected:
             void putTransaction(const BitcoinLikeBlockchainExplorerTransaction& tx) override ;
-            void putBlock(const BitcoinLikeBlockchainExplorer::Block& block) override ;
+            void putBlock(const Block& block) override ;
 
             const api::Currency& getCurrency() const {
                 return _currency;

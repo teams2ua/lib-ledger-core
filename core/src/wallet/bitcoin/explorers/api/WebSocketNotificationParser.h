@@ -32,11 +32,10 @@
 #ifndef LEDGER_CORE_WEBSOCKETNOTIFICATIONPARSER_H
 #define LEDGER_CORE_WEBSOCKETNOTIFICATIONPARSER_H
 
-#include "../../../../collections/collections.hpp"
+#include "collections/collections.hpp"
 #include <cstdio>
 #include <cstdint>
-#include "../BitcoinLikeBlockchainExplorer.hpp"
-#include "../../../../net/HttpClient.hpp"
+#include "net/HttpClient.hpp"
 #include "BlockParser.hpp"
 #include <rapidjson/reader.h>
 #include <stack>
@@ -45,7 +44,7 @@
 
 namespace ledger {
     namespace core {
-        class WebSocketNotificationParser : public AbstractWebSocketNotificationParser<BitcoinLikeBlockchainExplorerTransaction, BitcoinLikeBlockchainExplorer::Block, TransactionParser, BlockParser> {
+        class WebSocketNotificationParser : public AbstractWebSocketNotificationParser<BitcoinLikeBlockchainExplorerTransaction, Block, TransactionParser, BlockParser> {
         public:
 
 
@@ -58,7 +57,7 @@ namespace ledger {
             bool Key(const rapidjson::Reader::Ch* str, rapidjson::SizeType length, bool copy) override {
                 _lastKey = std::string(str, length);
                 return AbstractWebSocketNotificationParser<BitcoinLikeBlockchainExplorerTransaction,
-                        BitcoinLikeBlockchainExplorer::Block,
+                        Block,
                         TransactionParser,
                         BlockParser>::Key(str, length, copy);
             }

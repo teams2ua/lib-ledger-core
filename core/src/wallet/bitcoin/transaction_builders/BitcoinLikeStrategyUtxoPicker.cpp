@@ -32,9 +32,11 @@
 #include "BitcoinLikeStrategyUtxoPicker.h"
 #include <api/BitcoinLikeScript.hpp>
 #include <api/BitcoinLikeScriptChunk.hpp>
+#include "math/BigInt.h"
 #include <wallet/bitcoin/api_impl/BitcoinLikeScriptApi.h>
 #include <wallet/bitcoin/api_impl/BitcoinLikeTransactionApi.h>
 #include <random>
+
 namespace ledger {
     namespace core {
 

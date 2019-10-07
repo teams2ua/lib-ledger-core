@@ -24,8 +24,8 @@ namespace ledger {
             std::vector<uint8_t> out(outLength);
 
             if (secp256k1_ec_pubkey_create(_context, &pk, (const unsigned char *)privKey.data()) != 1) {
-                throw make_exception(api::ErrorCode::EC_PRIV_KEY_INVALID_FORMAT, "EC private key {} is not valid",
-                hex::toString(privKey));
+                throw Exception(api::ErrorCode::EC_PRIV_KEY_INVALID_FORMAT, fmt::format("EC private key {} is not valid",
+                hex::toString(privKey)));
             }
             secp256k1_ec_pubkey_serialize(_context, (unsigned char *) out.data(), &outLength, &pk,
                                           compress ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED);
@@ -36,7 +36,7 @@ namespace ledger {
         std::vector<uint8_t> Secp256k1Api::computeUncompressedPubKey(const std::vector<uint8_t> & pubKey) {
             secp256k1_pubkey pk;
             if (secp256k1_ec_pubkey_parse(_context, &pk, pubKey.data(), pubKey.size()) == -1) {
-                throw make_exception(api::ErrorCode::RUNTIME_ERROR, "Unable to parse secp256k1 point");
+                throw Exception(api::ErrorCode::RUNTIME_ERROR, "Unable to parse secp256k1 point");
             }
             size_t outLength = 65;
             std::vector<uint8_t> out(outLength);

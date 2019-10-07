@@ -43,14 +43,16 @@
 #include <wallet/common/AbstractWallet.hpp>
 #include <wallet/common/AbstractAccount.hpp>
 #include <wallet/common/Amount.h>
-#include <wallet/ethereum/explorers/EthereumLikeBlockchainExplorer.h>
-#include <wallet/ethereum/synchronizers/EthereumLikeAccountSynchronizer.h>
-#include <wallet/ethereum/observers/EthereumLikeBlockchainObserver.h>
-#include <wallet/ethereum/keychains/EthereumLikeKeychain.hpp>
 #include <wallet/ethereum/ERC20/ERC20LikeAccount.h>
 #include <wallet/ethereum/database/EthereumLikeAccountDatabaseEntry.h>
+
 namespace ledger {
     namespace core {
+        class EthereumLikeBlockchainExplorer;
+        class EthereumLikeBlockchainObserver;
+        class EthereumLikeAccountSynchronizer;
+        class EthereumLikeKeychain;
+
         class EthereumLikeAccount : public api::EthereumLikeAccount, public AbstractAccount {
         public:
 

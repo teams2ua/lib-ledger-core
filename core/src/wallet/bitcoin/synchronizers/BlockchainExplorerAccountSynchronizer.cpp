@@ -30,6 +30,7 @@
  */
 #include "BlockchainExplorerAccountSynchronizer.h"
 #include <wallet/bitcoin/BitcoinLikeAccount.hpp>
+#include "wallet/common/Block.h"
 
 namespace ledger {
     namespace core {
@@ -44,7 +45,7 @@ namespace ledger {
 
         void BlockchainExplorerAccountSynchronizer::updateCurrentBlock(std::shared_ptr<AbstractBlockchainExplorerAccountSynchronizer::SynchronizationBuddy> &buddy,
                                                                        const std::shared_ptr<api::ExecutionContext> &context) {
-            _explorer->getCurrentBlock().onComplete(context, [buddy] (const TryPtr<BitcoinLikeBlockchainExplorer::Block>& block) {
+            _explorer->getCurrentBlock().onComplete(context, [buddy] (const TryPtr<Block>& block) {
                 if (block.isSuccess()) {
                     soci::session sql(buddy->account->getWallet()->getDatabase()->getPool());
                     buddy->account->putBlock(sql, *block.getValue());

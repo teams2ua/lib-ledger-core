@@ -43,6 +43,7 @@ namespace ledger {
             class BigIntListCallback;
         }
 
+        class Block;
         class Operation;
         class BitcoinLikeUtxoPicker;
         class BitcoinLikeKeychain;
@@ -82,7 +83,7 @@ namespace ledger {
              * @param block
              * @return true if the block wasn't already known.
              */
-            bool putBlock(soci::session& sql, const BitcoinLikeBlockchainExplorer::Block& block);
+            bool putBlock(soci::session& sql, const Block& block);
 
             std::shared_ptr<BitcoinLikeKeychain> getKeychain() const;
 
