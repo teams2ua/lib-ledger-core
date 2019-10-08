@@ -29,7 +29,19 @@
  *
  */
 #include "WalletPool.hpp"
+#include <api/Account.hpp>
+#include <api/Block.hpp>
+#include <api/HttpClient.hpp>
+#include <api/WebSocketClient.hpp>
+#include <api/PathResolver.hpp>
+#include <api/LogPrinter.hpp>
+#include <api/ThreadDispatcher.hpp>
+#include <api/RandomNumberGenerator.hpp>
+#include <api/DatabaseBackend.hpp>
+#include <api/WalletPoolCallback.hpp>
+#include <api/DynamicObject.hpp>
 #include <api/PoolConfiguration.hpp>
+
 #include <wallet/currencies.hpp>
 #include <wallet/ethereum/ERC20/erc20Tokens.h>
 #include <wallet/pool/database/CurrenciesDatabaseHelper.hpp>
@@ -38,6 +50,16 @@
 #include <database/soci-date.h>
 #include <bitcoin/bech32/Bech32Parameters.h>
 #include "preferences/PreferencesBackend.hpp"
+#include <net/HttpClient.hpp>
+#include <net/WebSocketClient.h>
+#include <preferences/Preferences.hpp>
+#include <database/DatabaseSessionPool.hpp>
+#include <collections/DynamicObject.hpp>
+#include <events/EventPublisher.hpp>
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/AbstractWalletFactory.hpp"
+
+#include "spdlog/spdlog.h"
 
 namespace ledger {
     namespace core {

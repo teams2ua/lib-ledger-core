@@ -69,7 +69,7 @@ namespace ledger {
             log->debug(" Start erasing data of account : {}", getAccountUid());
             soci::session sql(getWallet()->getDatabase()->getPool());
             //Update account's internal preferences (for synchronization)
-            auto savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
+            auto savedState = parseState(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
             if (savedState.nonEmpty()) {
                 //Reset batches to blocks mined before given date
                 auto previousBlock = BlockDatabaseHelper::getPreviousBlockInDatabase(sql,
@@ -84,7 +84,7 @@ namespace ledger {
                         batch.blockHash = "";
                     }
                 }
-                getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->editor()->putObject<BlockchainExplorerAccountSynchronizationSavedState>("state", savedState.getValue())->commit();
+                getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->editor()->putData("state", serializeState(savedState.getValue()))->commit();
             }
             auto accountUid = getAccountUid();
             sql << "DELETE FROM operations WHERE account_uid = :account_uid AND date >= :date ", soci::use(

@@ -34,16 +34,18 @@
 
 #include <async/DedicatedContext.hpp>
 #include "BitcoinLikeTransactionBuilder.h"
-#include <wallet/bitcoin/keychains/BitcoinLikeKeychain.hpp>
+
 #include <wallet/bitcoin/types.h>
-#include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp>
+
 #include <api/Currency.hpp>
 #include <async/Future.hpp>
 #include <api/BitcoinLikeOutput.hpp>
-
+#include "wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorerTransaction.h"
 
 namespace ledger {
     namespace core {
+        class BitcoinLikeBlockchainExplorer;
+        class BitcoinLikeKeychain;
         class BitcoinLikeTransactionApi;
         class BitcoinLikeWritableInputApi;
         using BitcoinLikeGetUtxoFunction = std::function<Future<std::vector<std::shared_ptr<api::BitcoinLikeOutput>>> ()>;

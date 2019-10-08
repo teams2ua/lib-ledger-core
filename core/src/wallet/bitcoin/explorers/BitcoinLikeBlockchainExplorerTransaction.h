@@ -6,7 +6,7 @@
 
 #include <math/BigInt.h>
 #include <utils/Option.hpp>
-
+#include "wallet/common/Block.h"
 
 namespace ledger {
     namespace core {

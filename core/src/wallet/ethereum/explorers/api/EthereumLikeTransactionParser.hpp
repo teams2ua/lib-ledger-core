@@ -37,6 +37,7 @@
 #include <net/HttpClient.hpp>
 #include <rapidjson/reader.h>
 #include <stack>
+#include "wallet/ethereum/explorers/EthereumLikeBlockchainExplorerTransaction.h"
 
 
 namespace ledger {

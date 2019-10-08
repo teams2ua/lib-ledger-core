@@ -33,39 +33,31 @@
 #define LEDGER_CORE_ERC20LIKEACCOUNT_H
 
 #include <chrono>
-#include <api/ERC20LikeAccount.hpp>
-#include <api/ERC20Token.hpp>
-#include <wallet/ethereum/ERC20/ERC20LikeOperation.h>
-#include <api/BigInt.hpp>
-#include <api/Currency.hpp>
-#include <api/OperationQuery.hpp>
-#include <wallet/ethereum/EthereumLikeWallet.h>
-#include <wallet/ethereum/EthereumLikeAccount.h>
-#include <database/soci-number.h>
-#include <api/BinaryCallback.hpp>
+#include <memory>
+#include <string>
+
+#include "api/Currency.hpp"
+#include "api/ERC20LikeAccount.hpp"
+#include "api/ERC20Token.hpp"
+
+namespace soci {
+    class session;
+}
 
 namespace ledger {
     namespace core {
-        class ERC20OperationQuery : public OperationQuery {
-        public:
-            ERC20OperationQuery(const std::shared_ptr<api::QueryFilter>& headFilter,
-                                const std::shared_ptr<DatabaseSessionPool>& pool,
-                                const std::shared_ptr<api::ExecutionContext>& context,
-                                const std::shared_ptr<api::ExecutionContext>& mainContext) : OperationQuery(headFilter, pool, context, mainContext) {
+        namespace api {
+            class BigInt;
+            class ERC20LikeOperation;
+            enum class TimePeriod;
+            class ExecutionContext;
+        }
 
-            };
-        protected:
-            virtual soci::rowset<soci::row> performExecute(soci::session &sql) {
-                return _builder.select("o.account_uid, o.uid, o.wallet_uid, o.type, o.date, o.senders, o.recipients,"
-                                                "o.amount, o.fees, o.currency_name, o.trust, b.hash, b.height, b.time, e.uid"
-                                )
-                                .from("operations").to("o")
-                                .outerJoin("blocks AS b", "o.block_uid = b.uid")
-                                .outerJoin("erc20_operations AS e", "o.uid = e.ethereum_operation_uid")
-                                .execute(sql);
+        class BigInt;
+        class ERC20LikeOperation;
+        class EthereumLikeAccount;
+        template<typename T> class Future;
 
-            };
-        };
         class ERC20LikeAccount : public api::ERC20LikeAccount {
         public:
             ERC20LikeAccount(const std::string &accountUid,
@@ -75,7 +67,7 @@ namespace ledger {
                              const std::shared_ptr<EthereumLikeAccount> &parentAccount);
             api::ERC20Token getToken() override ;
             std::string getAddress() override ;
-            FuturePtr<api::BigInt> getBalance();
+            Future<std::shared_ptr<api::BigInt>> getBalance();
             void getBalance(const std::shared_ptr<api::BigIntCallback> & callback) override ;
 
             std::vector<std::shared_ptr<api::BigInt>> getBalanceHistoryFor(

@@ -31,27 +31,52 @@
 #ifndef LEDGER_CORE_ABSTRACTACCOUNT_HPP
 #define LEDGER_CORE_ABSTRACTACCOUNT_HPP
 
-#include <api/Account.hpp>
-#include "AbstractWallet.hpp"
-#include "OperationQuery.h"
-#include <async/Future.hpp>
-#include <wallet/common/Amount.h>
-#include <events/EventPublisher.hpp>
-#include <api/Block.hpp>
-#include <api/BlockCallback.hpp>
-#include <api/BitcoinLikeAccount.hpp>
-#include <api/EthereumLikeAccount.hpp>
-#include <api/RippleLikeAccount.hpp>
-#include <api/TezosLikeAccount.hpp>
-#include <api/AddressListCallback.hpp>
-#include <api/Address.hpp>
-#include <api/AmountListCallback.hpp>
-#include <api/ErrorCodeCallback.hpp>
-#include <api/TimePeriod.hpp>
 #include <mutex>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "api/Account.hpp"
+#include "api/WalletType.hpp"
+#include "async/DedicatedContext.hpp"
+
+namespace spdlog {
+    class logger;
+}
 
 namespace ledger {
     namespace core {
+        namespace api {
+            class Address;
+            class AddressListCallback;
+            class Amount;
+            class AmountCallback;
+            class AmountListCallback;
+            class BitcoinLikeAccount;
+            class Block;
+            class BlockCallback;
+            class ErrorCodeCallback;
+            class EthereumLikeAccount;
+            class Event;
+            class EventBus;
+            class ExecutionContext;
+            class Logger;
+            class OperationQuery;
+            class Preferences;
+            class RippleLikeAccount;
+            class TezosLikeAccount;
+            enum class TimePeriod;
+        }
+
+        class AbstractWallet;
+        class Amount;
+        class Block;
+        class EventPublisher;
+        template<typename T>
+        class Future;
+        class Operation;
+        class Preferences;
+
         class AbstractAccount : public DedicatedContext, public api::Account, public std::enable_shared_from_this<AbstractAccount> {
         public:
             using AddressList = std::vector<std::shared_ptr<api::Address>>;
@@ -76,7 +101,6 @@ namespace ledger {
             virtual std::shared_ptr<spdlog::logger> logger() const;
             virtual const std::string& getAccountUid() const;
             virtual std::shared_ptr<AbstractWallet> getWallet() const;
-            virtual std::shared_ptr<AbstractWallet> getWallet();
             const std::shared_ptr<api::ExecutionContext> getMainExecutionContext() const;
 
             void getLastBlock(const std::shared_ptr<api::BlockCallback> &callback) override;

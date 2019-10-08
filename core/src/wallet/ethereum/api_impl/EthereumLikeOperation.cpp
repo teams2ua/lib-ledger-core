@@ -29,14 +29,20 @@
  */
 
 
-#include "EthereumLikeOperation.h"
-#include <wallet/ethereum/api_impl/EthereumLikeTransactionApi.h>
-#include <wallet/ethereum/api_impl/InternalTransaction.h>
-#include <session.h>
-#include <wallet/common/AbstractAccount.hpp>
-#include <wallet/ethereum/api_impl/InternalTransaction.h>
-#include <wallet/ethereum/explorers/EthereumLikeBlockchainExplorer.h>
-#include <api/OperationType.hpp>
+#include "wallet/ethereum/api_impl/EthereumLikeOperation.h"
+
+#include "soci.h"
+
+#include "api/InternalTransaction.hpp"
+#include "api/OperationType.hpp"
+#include "wallet/common/AbstractAccount.hpp"
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/api_impl/OperationApi.h"
+#include "wallet/ethereum/api_impl/EthereumLikeTransactionApi.h"
+#include "wallet/ethereum/api_impl/InternalTransaction.h"
+#include "wallet/ethereum/api_impl/InternalTransaction.h"
+#include "wallet/ethereum/explorers/EthereumLikeBlockchainExplorer.h"
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {

@@ -56,8 +56,6 @@ namespace ledger {
         class RippleLikeBlockchainExplorer : public ConfigurationMatchable,
                                              public AbstractBlockchainExplorer<RippleLikeBlockchainExplorerTransaction> {
         public:
-            typedef ledger::core::Block Block;
-
             RippleLikeBlockchainExplorer(const std::shared_ptr<ledger::core::api::DynamicObject> &configuration,
                                          const std::vector<std::string> &matchableKeys);
 

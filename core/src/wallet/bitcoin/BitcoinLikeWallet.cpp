@@ -29,15 +29,24 @@
  *
  */
 #include "BitcoinLikeWallet.hpp"
-#include <api/ErrorCode.hpp>
-#include <api/AccountCallback.hpp>
-#include <wallet/common/database/AccountDatabaseHelper.h>
-#include <api/ConfigurationDefaults.hpp>
-#include <api/KeychainEngines.hpp>
-#include <wallet/bitcoin/database/BitcoinLikeAccountDatabaseHelper.h>
-#include "BitcoinLikeAccount.hpp"
+
 #include <algorithm>
-#include <async/wait.h>
+#include <set>
+
+#include "api/AccountCallback.hpp"
+#include "api/ConfigurationDefaults.hpp"
+#include "api/ErrorCode.hpp"
+#include "api/KeychainEngines.hpp"
+#include "async/wait.h"
+#include "wallet/bitcoin/BitcoinLikeAccount.hpp"
+#include "wallet/bitcoin/database/BitcoinLikeAccountDatabaseHelper.h"
+#include "wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp"
+#include "wallet/bitcoin/keychains/BitcoinLikeKeychain.hpp"
+#include "wallet/bitcoin/factories/BitcoinLikeKeychainFactory.h"
+#include "wallet/bitcoin/observers/BitcoinLikeBlockchainObserver.hpp"
+#include "wallet/common/database/AccountDatabaseHelper.h"
+#include "database/DatabaseSessionPool.hpp"
+
 
 namespace ledger {
     namespace core {

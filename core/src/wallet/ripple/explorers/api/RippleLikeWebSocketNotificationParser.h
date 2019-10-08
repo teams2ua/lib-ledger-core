@@ -53,7 +53,7 @@
 namespace ledger {
     namespace core {
         class RippleLikeWebSocketNotificationParser
-                : public AbstractWebSocketNotificationParser<RippleLikeBlockchainExplorerTransaction, RippleLikeBlockchainExplorer::Block, RippleLikeTransactionParser, RippleLikeBlockParser> {
+                : public AbstractWebSocketNotificationParser<RippleLikeBlockchainExplorerTransaction, Block, RippleLikeTransactionParser, RippleLikeBlockParser> {
         public:
 
 
@@ -66,7 +66,7 @@ namespace ledger {
             bool Key(const rapidjson::Reader::Ch *str, rapidjson::SizeType length, bool copy) override {
                 _lastKey = std::string(str, length);
                 return AbstractWebSocketNotificationParser<RippleLikeBlockchainExplorerTransaction,
-                        RippleLikeBlockchainExplorer::Block,
+                        Block,
                         RippleLikeTransactionParser,
                         RippleLikeBlockParser>::Key(str, length, copy);
             }

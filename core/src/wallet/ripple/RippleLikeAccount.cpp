@@ -31,6 +31,7 @@
 #include "RippleLikeAccount.h"
 #include "RippleLikeWallet.h"
 #include <async/Future.hpp>
+#include "wallet/common/OperationQuery.h"
 #include <wallet/common/database/OperationDatabaseHelper.h>
 #include <wallet/common/synchronizers/AbstractBlockchainExplorerAccountSynchronizer.h>
 #include <wallet/ripple/database/RippleLikeAccountDatabaseHelper.h>
@@ -50,6 +51,7 @@
 #include <database/soci-number.h>
 #include <database/soci-date.h>
 #include <database/soci-option.h>
+#include <database/DatabaseSessionPool.hpp>
 
 #include "utils/Serialization.hpp"
 
@@ -151,7 +153,7 @@ namespace ledger {
         }
 
         bool RippleLikeAccount::putBlock(soci::session &sql,
-                                         const RippleLikeBlockchainExplorer::Block &block) {
+                                         const Block &block) {
             Block abstractBlock;
             abstractBlock.hash = block.hash;
             abstractBlock.currencyName = getWallet()->getCurrency().name;
@@ -270,7 +272,7 @@ namespace ledger {
             log->debug(" Start erasing data of account : {}", getAccountUid());
             soci::session sql(getWallet()->getDatabase()->getPool());
             //Update account's internal preferences (for synchronization)
-            auto savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
+            auto savedState = parseState(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
             if (savedState.nonEmpty()) {
                 //Reset batches to blocks mined before given date
                 auto previousBlock = BlockDatabaseHelper::getPreviousBlockInDatabase(sql,
@@ -286,8 +288,7 @@ namespace ledger {
                     }
                 }
                 getInternalPreferences()->getSubPreferences(
-                        "BlockchainExplorerAccountSynchronizer")->editor()->putObject<BlockchainExplorerAccountSynchronizationSavedState>(
-                        "state", savedState.getValue())->commit();
+                        "BlockchainExplorerAccountSynchronizer")->editor()->putData("state", serializeState(savedState.getValue()))->commit();
             }
             auto accountUid = getAccountUid();
             sql << "DELETE FROM operations WHERE account_uid = :account_uid AND date >= :date ", soci::use(
@@ -315,7 +316,7 @@ namespace ledger {
 
             //Update current block height (needed to compute trust level)
             _explorer->getCurrentBlock().onComplete(getContext(),
-                                                    [self](const TryPtr<RippleLikeBlockchainExplorer::Block> &block) mutable {
+                                                    [self](const TryPtr<Block> &block) mutable {
                                                         if (block.isSuccess()) {
                                                             self->_currentLedgerSequence = block.getValue()->height;
                                                         }

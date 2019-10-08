@@ -29,15 +29,30 @@
  *
  */
 #include "WalletPoolApi.hpp"
-#include <async/Future.hpp>
-#include <api/WalletCallback.hpp>
-#include <api/I32Callback.hpp>
-#include <api/CurrencyListCallback.hpp>
-#include <api/CurrencyCallback.hpp>
-#include <api/WalletListCallback.hpp>
-#include <database/soci-number.h>
-#include <database/soci-date.h>
-#include <database/soci-option.h>
+
+#include "api/BlockCallback.hpp"
+#include "api/CurrencyCallback.hpp"
+#include "api/CurrencyListCallback.hpp"
+#include "api/ErrorCodeCallback.hpp"
+#include "api/I32Callback.hpp"
+#include "api/ThreadDispatcher.hpp"
+#include "api/WalletCallback.hpp"
+#include "api/WalletListCallback.hpp"
+#include "api/WalletPoolCallback.hpp"
+
+
+#include "async/Future.hpp"
+#include "database/soci-number.h"
+#include "database/soci-date.h"
+#include "database/soci-option.h"
+#include "debug/logger.hpp"
+#include "debug/LoggerApi.hpp"
+#include "preferences/Preferences.hpp"
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/Block.h"
+#include "wallet/pool/WalletPool.hpp"
+#include "wallet/pool/api/WalletPoolApi.hpp"
+
 
 namespace ledger {
     namespace core {

@@ -32,7 +32,7 @@
 #define LEDGER_CORE_BITCOINLIKETRANSACTIONDATABASEHELPER_H
 
 #include <soci.h>
-#include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp>
+#include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorerTransaction.h>
 
 namespace ledger {
     namespace core {

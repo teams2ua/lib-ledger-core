@@ -60,8 +60,8 @@ namespace ledger {
             auto& currentObject = _hierarchy.top();
 
             if (currentObject == "block") {
-                EthereumLikeBlockchainExplorer::Block block;
-                _transaction->block = Option<EthereumLikeBlockchainExplorer::Block>(block);
+                Block block;
+                _transaction->block = Option<Block>(block);
                 _blockParser.init(&_transaction->block.getValue());
             } else if (currentObject == "list" && _arrayDepth == 1) {
                 _transaction->erc20Transactions.emplace_back(ERC20Transaction());

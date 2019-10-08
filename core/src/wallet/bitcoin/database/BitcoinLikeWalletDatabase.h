@@ -34,7 +34,6 @@
 #include <soci.h>
 #include <wallet/pool/WalletPool.hpp>
 #include <database/DatabaseSessionPool.hpp>
-#include "BitcoinLikeAccountDatabase.h"
 
 namespace ledger {
     namespace core {

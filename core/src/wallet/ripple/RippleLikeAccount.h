@@ -74,7 +74,7 @@ namespace ledger {
 
             int putTransaction(soci::session &sql, const RippleLikeBlockchainExplorerTransaction &transaction);
 
-            bool putBlock(soci::session &sql, const RippleLikeBlockchainExplorer::Block &block);
+            bool putBlock(soci::session &sql, const Block &block);
 
             std::shared_ptr<RippleLikeKeychain> getKeychain() const;
 

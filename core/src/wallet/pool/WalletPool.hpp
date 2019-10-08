@@ -32,33 +32,45 @@
 #define LEDGER_CORE_WALLETPOOL_HPP
 
 #include <string>
-#include <utils/Option.hpp>
-#include <api/HttpClient.hpp>
-#include <api/WebSocketClient.hpp>
-#include <api/PathResolver.hpp>
-#include <api/LogPrinter.hpp>
-#include <api/ThreadDispatcher.hpp>
-#include <api/RandomNumberGenerator.hpp>
-#include <api/DatabaseBackend.hpp>
-#include <api/WalletPoolCallback.hpp>
-
 #include <memory>
 #include <unordered_map>
 
-#include <net/HttpClient.hpp>
+#include "api/ErrorCode.hpp"
 #include <async/DedicatedContext.hpp>
-#include <preferences/Preferences.hpp>
-#include <api/DynamicObject.hpp>
-#include <database/DatabaseSessionPool.hpp>
-#include <collections/DynamicObject.hpp>
-#include <wallet/bitcoin/factories/BitcoinLikeWalletFactory.hpp>
-#include <wallet/common/AbstractWalletFactory.hpp>
-#include <events/EventPublisher.hpp>
-#include <net/WebSocketClient.h>
+#include <utils/Option.hpp>
+
+namespace spdlog {
+    class logger;
+}
 
 namespace ledger {
     namespace core {
+        namespace api {
+            class Block;
+            class Currency;
+            class DatabaseBackend;
+            class DynamicObject;
+            class EventBus;
+            class HttpClient;
+            class LogPrinter;
+            class RandomNumberGenerator;
+            class PathResolver;
+            class ThreadDispatcher;
+            class WalletPoolCallback;
+            class WebSocketClient;
+        }
+
+        class AbstractWallet;
+        class AbstractWalletFactory;
         class BitcoinLikeWalletFactory;
+        class DynamicObject;
+        class DatabaseSessionPool;
+        class EventPublisher;
+        class HttpClient;
+        class Preferences;
+        class PreferencesBackend;
+        class WalletDatabaseEntry;
+        class WebSocketClient;
 
         class WalletPool : public DedicatedContext, public std::enable_shared_from_this<WalletPool> {
         public:

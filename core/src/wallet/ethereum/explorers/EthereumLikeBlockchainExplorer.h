@@ -55,7 +55,6 @@ namespace ledger {
         class EthereumLikeBlockchainExplorer : public ConfigurationMatchable,
                                                public AbstractBlockchainExplorer<EthereumLikeBlockchainExplorerTransaction> {
         public:
-            typedef ledger::core::Block Block;
             EthereumLikeBlockchainExplorer(const std::shared_ptr<ledger::core::api::DynamicObject> &configuration,
                                            const std::vector<std::string> &matchableKeys);
 

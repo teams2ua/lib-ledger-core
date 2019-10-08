@@ -28,14 +28,41 @@
  * SOFTWARE.
  *
  */
-#include <wallet/common/database/AccountDatabaseHelper.h>
-#include "AbstractAccount.hpp"
-#include <wallet/common/OperationQuery.h>
-#include <api/AmountCallback.hpp>
-#include <utils/Exception.hpp>
-#include <api/ErrorCode.hpp>
-#include <events/Event.hpp>
-#include <wallet/common/database/BlockDatabaseHelper.h>
+
+#include "wallet/common/AbstractAccount.hpp"
+
+#include "api/Address.hpp"
+#include "api/AddressListCallback.hpp"
+#include "api/AmountCallback.hpp"
+#include "api/AmountListCallback.hpp"
+#include "api/BitcoinLikeAccount.hpp"
+#include "api/Block.hpp"
+#include "api/BlockCallback.hpp"
+#include "api/ErrorCode.hpp"
+#include "api/ErrorCodeCallback.hpp"
+#include "api/EthereumLikeAccount.hpp"
+#include "api/EventBus.hpp"
+#include "api/ExecutionContext.hpp"
+#include "api/Logger.hpp"
+#include "api/OperationQuery.hpp"
+#include "api/Preferences.hpp"
+#include "api/RippleLikeAccount.hpp"
+#include "api/TezosLikeAccount.hpp"
+#include "api/TimePeriod.hpp"
+
+#include "async/Future.hpp"
+#include "events/Event.hpp"
+#include "events/EventPublisher.hpp"
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/Amount.h"
+#include "wallet/common/OperationQuery.h"
+#include "wallet/common/database/BlockDatabaseHelper.h"
+#include "wallet/common/database/AccountDatabaseHelper.h"
+#include "utils/Exception.hpp"
+#include "preferences/Preferences.hpp"
+#include "collections/DynamicObject.hpp"
+
+#include "spdlog/spdlog.h"
 
 namespace ledger {
     namespace core {
@@ -126,14 +153,6 @@ namespace ledger {
             }
             return wallet;
         }
-
-		std::shared_ptr<AbstractWallet> AbstractAccount::getWallet() {
-            auto wallet = _wallet.lock();
-            if (!wallet) {
-                throw make_exception(api::ErrorCode::NULL_POINTER, "Wallet was already released");
-            }
-            return wallet;
-		}
 
         const std::shared_ptr<api::ExecutionContext> AbstractAccount::getMainExecutionContext() const {
             return _mainExecutionContext;

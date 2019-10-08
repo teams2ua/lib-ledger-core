@@ -30,47 +30,43 @@
  */
 #include "BitcoinLikeAccount.hpp"
 
-#include <collections/functional.hpp>
+#include "spdlog/logger.h"
 
-#include <utils/DateUtils.hpp>
+#include "api/BigInt.hpp"
+#include "api/BigIntListCallback.hpp"
+#include "api/BitcoinLikeInput.hpp"
+#include "api/BitcoinLikeOutputListCallback.hpp"
+#include "api/BitcoinLikeOutputListCallback.hpp"
+#include "api/EventCode.hpp"
+#include "api/QueryFilter.hpp"
+#include "api/I32Callback.hpp"
+#include "api/StringCallback.hpp"
 
-#include <wallet/common/Operation.h>
-#include <wallet/bitcoin/database/BitcoinLikeUTXODatabaseHelper.h>
-#include <wallet/common/database/OperationDatabaseHelper.h>
-#include <wallet/bitcoin/api_impl/BitcoinLikeOutputApi.h>
-#include <api/BitcoinLikeOutputListCallback.hpp>
-#include <api/BitcoinLikeInput.hpp>
-#include <api/BigInt.hpp>
-#include <api/BigIntListCallback.hpp>
-#include <wallet/common/database/BlockDatabaseHelper.h>
-#include <wallet/bitcoin/transaction_builders/BitcoinLikeTransactionBuilder.h>
-#include <wallet/bitcoin/synchronizers/BitcoinLikeAccountSynchronizer.hpp>
-#include <wallet/bitcoin/transaction_builders/BitcoinLikeStrategyUtxoPicker.h>
-#include <wallet/bitcoin/database/BitcoinLikeTransactionDatabaseHelper.h>
-#include <wallet/common/database/OperationDatabaseHelper.h>
-#include <wallet/bitcoin/api_impl/BitcoinLikeTransactionApi.h>
-#include <wallet/bitcoin/observers/BitcoinLikeBlockchainObserver.hpp>
-#include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp>
+#include "collections/functional.hpp"
+#include "database/query/QueryBuilder.h"
+#include "database/soci-date.h"
+#include "database/soci-number.h"
+#include "database/soci-option.h"
+#include "events/Event.hpp"
+#include "events/EventPublisher.hpp"
 #include "preferences/PreferencesEditor.hpp"
-
-#include <wallet/common/synchronizers/AbstractBlockchainExplorerAccountSynchronizer.h>
-
-#include <api/I32Callback.hpp>
-#include <api/BitcoinLikeOutputListCallback.hpp>
-#include <api/StringCallback.hpp>
-#include <api/EventCode.hpp>
-
-#include <events/EventPublisher.hpp>
-#include <events/Event.hpp>
-
-#include <spdlog/logger.h>
-
-#include <database/query/QueryBuilder.h>
-#include <database/soci-number.h>
-#include <database/soci-date.h>
-#include <database/soci-option.h>
-
+#include "utils/DateUtils.hpp"
 #include "utils/Serialization.hpp"
+#include "wallet/bitcoin/api_impl/BitcoinLikeOutputApi.h"
+#include "wallet/bitcoin/api_impl/BitcoinLikeTransactionApi.h"
+#include "wallet/bitcoin/database/BitcoinLikeTransactionDatabaseHelper.h"
+#include "wallet/bitcoin/database/BitcoinLikeUTXODatabaseHelper.h"
+#include "wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp"
+#include "wallet/bitcoin/keychains/BitcoinLikeKeychain.hpp"
+#include "wallet/bitcoin/observers/BitcoinLikeBlockchainObserver.hpp"
+#include "wallet/bitcoin/synchronizers/BitcoinLikeAccountSynchronizer.hpp"
+#include "wallet/bitcoin/transaction_builders/BitcoinLikeStrategyUtxoPicker.h"
+#include "wallet/bitcoin/transaction_builders/BitcoinLikeTransactionBuilder.h"
+#include "wallet/common/Operation.h"
+#include "wallet/common/OperationQuery.h"
+#include "wallet/common/database/BlockDatabaseHelper.h"
+#include "wallet/common/database/OperationDatabaseHelper.h"
+#include "wallet/common/synchronizers/AbstractBlockchainExplorerAccountSynchronizer.h"
 
 namespace ledger {
     namespace core {
@@ -688,7 +684,7 @@ namespace ledger {
             log->debug(" Start erasing data of account : {}", getAccountUid());
             soci::session sql(getWallet()->getDatabase()->getPool());
             //Update account's internal preferences (for synchronization)
-            auto savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
+            auto savedState = parseState(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
             if (savedState.nonEmpty()) {
                 //Reset batches to blocks mined before given date
                 auto previousBlock = BlockDatabaseHelper::getPreviousBlockInDatabase(sql, getWallet()->getCurrency().name, date);
@@ -701,7 +697,7 @@ namespace ledger {
                         batch.blockHash = "";
                     }
                 }
-                getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->editor()->putObject<BlockchainExplorerAccountSynchronizationSavedState>("state", savedState.getValue())->commit();
+                getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->editor()->putData("state", serializeState(savedState.getValue()))->commit();
             }
             auto accountUid = getAccountUid();
             sql << "DELETE FROM operations WHERE account_uid = :account_uid AND date >= :date ", soci::use(accountUid), soci::use(date);

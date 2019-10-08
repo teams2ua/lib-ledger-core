@@ -31,31 +31,49 @@
 #ifndef LEDGER_CORE_ABSTRACTWALLET_HPP
 #define LEDGER_CORE_ABSTRACTWALLET_HPP
 
+#include <memory>
+#include <string>
+#include <unordered_map>
+
+#include "api/Currency.hpp"
 #include "api/Wallet.hpp"
-#include <api/Currency.hpp>
-#include <api/Account.hpp>
-#include <preferences/Preferences.hpp>
-#include <async/DedicatedContext.hpp>
-#include <events/EventPublisher.hpp>
-#include <debug/logger.hpp>
-#include <api/WalletType.hpp>
-#include <database/DatabaseSessionPool.hpp>
-#include <collections/DynamicObject.hpp>
-#include <utils/DerivationScheme.hpp>
-#include <api/AccountCreationInfo.hpp>
-#include <api/ExtendedKeyAccountCreationInfo.hpp>
-#include <api/AccountCreationInfoCallback.hpp>
-#include <api/ExtendedKeyAccountCreationInfoCallback.hpp>
-#include <api/AccountCallback.hpp>
-#include <api/Block.hpp>
-#include <api/BlockCallback.hpp>
-#include <api/DynamicObject.hpp>
+#include "async/DedicatedContext.hpp"
+#include "utils/DerivationScheme.hpp"
+
+namespace spdlog {
+    class logger;
+}
+
+namespace soci {
+    class session;
+}
 
 namespace ledger {
     namespace core {
+        namespace api {
+            class Block;
+            class BlockCallback;
+            enum class ErrorCode;
+            class EventBus;
+            class Preference;
+            class Logger;
+            enum class WalletType;
+            class BitcoinLikeWallet;
+            class I32Callback;
+            class AccountCallback;
+            class Account;
+            class ExtendedKeyAccountCreationInfo;
+            class AccountCreationInfo;
+        }
 
+        class DynamicObject;
         class WalletPool;
         class AbstractAccount;
+        class Preferences;
+        class DatabaseSessionPool;
+        class EventPublisher;
+        class DatabaseSessionPool;
+
         class AbstractWallet : public virtual api::Wallet, public DedicatedContext, public virtual std::enable_shared_from_this<AbstractWallet> {
         public:
             AbstractWallet(const std::string& walletName,

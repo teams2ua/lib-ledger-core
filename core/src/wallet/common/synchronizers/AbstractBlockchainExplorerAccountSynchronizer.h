@@ -50,39 +50,10 @@
 #include <wallet/common/AbstractWallet.hpp>
 #include <wallet/common/database/BlockDatabaseHelper.h>
 #include <wallet/common/database/AccountDatabaseHelper.h>
-#include "utils/Serialization.hpp"
+#include "wallet/common/synchronizers/BlockchainExplorerAccountSynchronizationSavedState.h"
 
 namespace ledger {
     namespace core {
-
-        struct BlockchainExplorerAccountSynchronizationBatchSavedState {
-            std::string blockHash;
-            uint32_t blockHeight;
-
-            BlockchainExplorerAccountSynchronizationBatchSavedState() {
-                blockHeight = 0;
-            }
-
-            template<class Archive>
-            void serialize(Archive & archive) {
-                archive(blockHash, blockHeight);
-            };
-        };
-
-        struct BlockchainExplorerAccountSynchronizationSavedState {
-            uint32_t halfBatchSize;
-            std::vector<BlockchainExplorerAccountSynchronizationBatchSavedState> batches;
-            std::map<std::string, std::string> pendingTxsHash;
-
-            BlockchainExplorerAccountSynchronizationSavedState(): halfBatchSize(0) {
-            }
-
-            template<class Archive>
-            void serialize(Archive & archive)
-            {
-                archive(halfBatchSize, batches, pendingTxsHash); // serialize things by passing them to the archive
-            }
-        };
 
         template<typename Account, typename AddressType, typename Keychain, typename Explorer>
         class AbstractBlockchainExplorerAccountSynchronizer {
@@ -182,7 +153,7 @@ namespace ledger {
                         ->getInt(api::Configuration::SYNCHRONIZATION_HALF_BATCH_SIZE)
                         .value_or(10);
                 buddy->keychain = account->getKeychain();
-                buddy->savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(buddy->preferences->getData("state", {}));
+                buddy->savedState = parseState(buddy->preferences->getData("state", {}));
                 buddy->logger
                         ->info("Starting synchronization for account#{} ({}) of wallet {} at {}",
                                account->getIndex(),
@@ -291,7 +262,7 @@ namespace ledger {
                 return synchronizeBatch(currentBatchIndex, buddy).template flatMap<Unit>(buddy->account->getContext(), [=] (const bool& hadTransactions) -> Future<Unit> {
                     benchmark->stop();
 
-                    buddy->preferences->editor()->template putObject<BlockchainExplorerAccountSynchronizationSavedState>("state", buddy->savedState.getValue())->commit();
+                    buddy->preferences->editor()->putData("state", serializeState(buddy->savedState.getValue()))->commit();
 
                     //Sync stops if there are no more batches in savedState and last batch has no transactions
                     //But we may want to force sync of accounts within KEYCHAIN_OBSERVABLE_RANGE
@@ -342,8 +313,7 @@ namespace ledger {
                             }
 
                             //Save new savedState
-                            buddy->preferences->editor()->template putObject<BlockchainExplorerAccountSynchronizationSavedState>(
-                                    "state", buddy->savedState.getValue())->commit();
+                            buddy->preferences->editor()->putData("state", serializeState(buddy->savedState.getValue()))->commit();
 
                             //Synchronize same batch now with an existing block (of hash lastBlockHash)
                             //if failedBatch was not the deepest block part of that reorg, this recursive call

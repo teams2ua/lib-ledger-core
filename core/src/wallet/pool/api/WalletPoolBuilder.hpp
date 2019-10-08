@@ -31,15 +31,24 @@
 #ifndef LEDGER_CORE_WALLETPOOLBUILDER_HPP
 #define LEDGER_CORE_WALLETPOOLBUILDER_HPP
 
+#include <memory>
+#include <string>
 #include <unordered_map>
 
 #include <api/WalletPoolBuilder.hpp>
-#include <api/WalletPool.hpp>
-#include <utils/optional.hpp>
 
 namespace ledger {
-
     namespace core {
+        namespace api {
+            class DatabaseBackend;
+            class DynamicObject;
+            class HttpClient;
+            class LogPrinter;
+            class PathResolver;
+            class RandomNumberGenerator;
+            class ThreadDispatcher;
+            class WebSocketClient;
+        }
         class WalletPoolBuilder : public api::WalletPoolBuilder, public std::enable_shared_from_this<WalletPoolBuilder> {
 
         public:

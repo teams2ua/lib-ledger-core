@@ -74,7 +74,7 @@ namespace ledger {
             tx.fees = BigInt::fromHex(row.get<std::string>(5));
             tx.confirmations = get_number<uint64_t>(row, 6);
             if (row.get_indicator(7) != i_null) {
-                RippleLikeBlockchainExplorer::Block block;
+                Block block;
                 block.height = get_number<uint64_t>(row, 7);
                 block.hash = row.get<std::string>(8);
                 block.time = row.get<std::chrono::system_clock::time_point>(9);
@@ -114,7 +114,7 @@ namespace ledger {
         std::string RippleLikeTransactionDatabaseHelper::putTransaction(soci::session &sql,
                                                                         const std::string &accountUid,
                                                                         const RippleLikeBlockchainExplorerTransaction &tx) {
-            auto blockUid = tx.block.map<std::string>([](const RippleLikeBlockchainExplorer::Block &block) {
+            auto blockUid = tx.block.map<std::string>([](const Block &block) {
                 return block.getUid();
             });
 

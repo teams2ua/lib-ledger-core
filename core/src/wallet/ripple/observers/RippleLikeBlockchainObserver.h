@@ -56,7 +56,7 @@ namespace ledger {
     namespace core {
         class RippleLikeAccount;
 
-        using RippleBlockchainObserver = AbstractBlockchainObserver<RippleLikeAccount, RippleLikeBlockchainExplorerTransaction, RippleLikeBlockchainExplorer::Block>;
+        using RippleBlockchainObserver = AbstractBlockchainObserver<RippleLikeAccount, RippleLikeBlockchainExplorerTransaction, Block>;
 
         class RippleLikeBlockchainObserver : public RippleBlockchainObserver,
                                              public AbstractLedgerApiBlockchainObserver,
@@ -80,7 +80,7 @@ namespace ledger {
         protected:
             void putTransaction(const RippleLikeBlockchainExplorerTransaction &tx) override;
 
-            void putBlock(const RippleLikeBlockchainExplorer::Block &block) override;
+            void putBlock(const Block &block) override;
 
             const api::Currency &getCurrency() const {
                 return _currency;

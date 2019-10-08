@@ -29,12 +29,14 @@
  *
  */
 #include "BitcoinLikeOutputApi.h"
-#include <utils/hex.h>
-#include <wallet/common/Amount.h>
-#include <wallet/common/AbstractAccount.hpp>
-#include <utils/Exception.hpp>
-#include <wallet/bitcoin/scripts/BitcoinLikeScript.h>
-#include <wallet/bitcoin/api_impl/BitcoinLikeScriptApi.h>
+
+#include "wallet/bitcoin/api_impl/BitcoinLikeScriptApi.h"
+#include "wallet/bitcoin/scripts/BitcoinLikeScript.h"
+#include "wallet/common/AbstractAccount.hpp"
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/Amount.h"
+#include "utils/Exception.hpp"
+#include "utils/hex.h"
 
 namespace ledger {
     namespace core {

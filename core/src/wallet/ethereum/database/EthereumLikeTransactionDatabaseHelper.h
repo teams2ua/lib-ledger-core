@@ -34,7 +34,7 @@
 
 #include <string>
 #include <soci.h>
-#include <wallet/ethereum/explorers/EthereumLikeBlockchainExplorer.h>
+#include <wallet/ethereum/explorers/EthereumLikeBlockchainExplorerTransaction.h>
 
 namespace ledger {
     namespace core {

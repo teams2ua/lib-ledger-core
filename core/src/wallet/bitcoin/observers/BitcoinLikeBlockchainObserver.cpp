@@ -30,7 +30,9 @@
  */
 
 #include "BitcoinLikeBlockchainObserver.hpp"
-#include <wallet/bitcoin/BitcoinLikeAccount.hpp>
+#include "wallet/bitcoin/BitcoinLikeAccount.hpp"
+#include "wallet/common/AbstractWallet.hpp"
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {

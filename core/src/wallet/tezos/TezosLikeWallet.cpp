@@ -47,6 +47,7 @@
 #include <api/TezosCurve.hpp>
 #include <api/TezosConfiguration.hpp>
 #include <api/TezosConfigurationDefaults.hpp>
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {

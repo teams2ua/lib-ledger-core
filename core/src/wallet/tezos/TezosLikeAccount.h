@@ -39,9 +39,11 @@
 #include <api/StringCallback.hpp>
 #include <api/Event.hpp>
 #include <api/BigIntCallback.hpp>
+#include "api/QueryFilter.hpp"
 #include <wallet/common/AbstractWallet.hpp>
 #include <wallet/common/AbstractAccount.hpp>
 #include <wallet/common/Amount.h>
+#include "wallet/common/OperationQuery.h"
 #include <wallet/tezos/explorers/TezosLikeBlockchainExplorer.h>
 #include <wallet/tezos/synchronizers/TezosLikeAccountSynchronizer.h>
 #include <wallet/tezos/observers/TezosLikeBlockchainObserver.h>

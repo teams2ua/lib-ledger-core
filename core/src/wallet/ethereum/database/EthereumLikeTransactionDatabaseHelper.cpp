@@ -81,7 +81,7 @@ namespace ledger {
             tx.confirmations = get_number<uint64_t>(row, 10);
             tx.status = get_number<uint64_t>(row, 11);
             if (row.get_indicator(12) != i_null) {
-                EthereumLikeBlockchainExplorer::Block block;
+                Block block;
                 block.hash = row.get<std::string>(12);
                 block.height = get_number<uint64_t>(row, 13);
                 block.time = row.get<std::chrono::system_clock::time_point>(14);
@@ -108,7 +108,7 @@ namespace ledger {
         std::string EthereumLikeTransactionDatabaseHelper::putTransaction(soci::session &sql,
                                                                          const std::string& accountUid,
                                                                          const EthereumLikeBlockchainExplorerTransaction &tx) {
-            auto blockUid = tx.block.map<std::string>([] (const EthereumLikeBlockchainExplorer::Block& block) {
+            auto blockUid = tx.block.map<std::string>([] (const Block& block) {
                 return block.getUid();
             });
 

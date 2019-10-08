@@ -29,8 +29,10 @@
  *
  */
 #include "BitcoinLikeInputApi.h"
-#include <wallet/common/Amount.h>
-#include <wallet/common/AbstractAccount.hpp>
+
+#include "wallet/common/AbstractAccount.hpp"
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/Amount.h"
 
 namespace ledger {
     namespace core {

@@ -45,7 +45,7 @@
 
 #include <wallet/common/database/AccountDatabaseHelper.h>
 #include <wallet/ripple/database/RippleLikeAccountDatabaseHelper.h>
-
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {

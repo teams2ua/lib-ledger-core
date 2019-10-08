@@ -34,6 +34,8 @@
 #include <wallet/ethereum/EthereumLikeAccount.h>
 #include <math/Fibonacci.h>
 #include <utils/JSONUtils.h>
+#include "database/DatabaseSessionPool.hpp"
+
 namespace ledger {
     namespace core {
 
@@ -62,7 +64,7 @@ namespace ledger {
             }
         }
 
-        void EthereumLikeBlockchainObserver::putBlock(const EthereumLikeBlockchainExplorer::Block &block) {
+        void EthereumLikeBlockchainObserver::putBlock(const Block &block) {
             std::lock_guard<std::mutex> lock(_lock);
             for (const auto& account : _accounts) {
                 account->run([account, block] () {

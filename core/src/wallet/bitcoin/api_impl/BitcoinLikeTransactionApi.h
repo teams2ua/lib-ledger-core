@@ -33,7 +33,7 @@
 
 #include <api/BitcoinLikeTransaction.hpp>
 #include <wallet/common/api_impl/OperationApi.h>
-#include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp>
+#include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorerTransaction.h>
 #include "BitcoinLikeInputApi.h"
 #include "BitcoinLikeOutputApi.h"
 #include <api/BitcoinLikeBlock.hpp>

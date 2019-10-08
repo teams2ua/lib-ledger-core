@@ -2,9 +2,10 @@
 
 #include <string>
 #include <vector>
-#include <math/BigInt.h>
-#include <utils/Option.hpp>
-#include <wallet/common/Block.h>
+#include "api/OperationType.hpp"
+#include "math/BigInt.h"
+#include "utils/Option.hpp"
+#include "wallet/common/Block.h"
 
 namespace ledger {
     namespace core {

@@ -30,11 +30,13 @@
 #ifndef LEDGER_CORE_ETHEREUMLIKBLOCKPARSER_HPP
 #define LEDGER_CORE_ETHEREUMLIKBLOCKPARSER_HPP
 
+#include <string>
 #include <wallet/common/explorers/api/AbstractBlockParser.h>
-#include "../EthereumLikeBlockchainExplorer.h"
+#include "wallet/common/Block.h"
+
 namespace ledger {
     namespace core {
-        class EthereumLikeBlockParser : public AbstractBlockParser<EthereumLikeBlockchainExplorer::Block> {
+        class EthereumLikeBlockParser : public AbstractBlockParser<Block> {
         public:
             EthereumLikeBlockParser(std::string &lastKey) : _lastKey(lastKey) {};
         protected:

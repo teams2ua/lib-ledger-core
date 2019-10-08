@@ -31,9 +31,13 @@
 #ifndef LEDGER_CORE_OPERATIONAPI_H
 #define LEDGER_CORE_OPERATIONAPI_H
 
-#include <api/Operation.hpp>
-#include "../Operation.h"
-#include <api/Currency.hpp>
+#include <memory>
+#include <vector>
+#include <string>
+
+#include "api/Operation.hpp"
+#include "wallet/common/Operation.h"
+#include "api/Currency.hpp"
 
 namespace ledger {
     namespace core {

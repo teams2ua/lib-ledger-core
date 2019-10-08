@@ -31,27 +31,35 @@
 #ifndef LEDGER_CORE_BITCOINLIKEACCOUNT_HPP
 #define LEDGER_CORE_BITCOINLIKEACCOUNT_HPP
 
+#include <mutex>
+#include <memory>
+
 #include "api/BitcoinLikeAccount.hpp"
 #include "wallet/common/AbstractAccount.hpp"
-#include <mutex>
+
+namespace soci {
+    class session;
+}
 
 namespace ledger {
     namespace core {
         namespace api {
             class EventBus;
-            class BitcoinLikeOutput;
             class BigIntListCallback;
+            class BitcoinLikeOutput;
+            class OperationQuery;
         }
 
+        class BitcoinLikeAccountSynchronizer;
+        class BitcoinLikeBlockchainExplorer;
+        class BitcoinLikeBlockchainExplorerTransaction;
+        class BitcoinLikeBlockchainObserver;
+        class BitcoinLikeKeychain;
+        class BitcoinLikeUtxoPicker;
+        class BitcoinLikeUtxoPicker;
         class Block;
         class Operation;
-        class BitcoinLikeUtxoPicker;
-        class BitcoinLikeKeychain;
-        class BitcoinLikeBlockchainExplorer;
-        class BitcoinLikeAccountSynchronizer;
-        class BitcoinLikeBlockchainObserver;
-        class BitcoinLikeUtxoPicker;
-        
+
         class BitcoinLikeAccount : public api::BitcoinLikeAccount, public AbstractAccount {
         public:
             static const int FLAG_NEW_TRANSACTION = 0x01;

@@ -37,7 +37,7 @@
 
 namespace ledger {
     namespace core {
-        class RippleLikeBlockParser : public AbstractBlockParser<RippleLikeBlockchainExplorer::Block> {
+        class RippleLikeBlockParser : public AbstractBlockParser<Block> {
         public:
             RippleLikeBlockParser(std::string &lastKey) : _lastKey(lastKey) {};
 

@@ -52,7 +52,7 @@
 namespace ledger {
     namespace core {
         class EthereumLikeAccount;
-        using EthereumBlockchainObserver = AbstractBlockchainObserver<EthereumLikeAccount, EthereumLikeBlockchainExplorerTransaction, EthereumLikeBlockchainExplorer::Block>;
+        using EthereumBlockchainObserver = AbstractBlockchainObserver<EthereumLikeAccount, EthereumLikeBlockchainExplorerTransaction, Block>;
         class EthereumLikeBlockchainObserver : public EthereumBlockchainObserver,
                                                public DedicatedContext,
                                                public ConfigurationMatchable {
@@ -67,7 +67,7 @@ namespace ledger {
         protected:
             void putTransaction(const EthereumLikeBlockchainExplorerTransaction &tx) override;
 
-            void putBlock(const EthereumLikeBlockchainExplorer::Block &block) override;
+            void putBlock(const Block &block) override;
 
             const api::Currency &getCurrency() const {
                 return _currency;

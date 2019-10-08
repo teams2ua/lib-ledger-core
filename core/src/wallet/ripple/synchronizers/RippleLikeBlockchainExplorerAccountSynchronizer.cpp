@@ -31,6 +31,7 @@
 
 #include "RippleLikeBlockchainExplorerAccountSynchronizer.h"
 #include <wallet/ripple/RippleLikeAccount.h>
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {
@@ -45,7 +46,7 @@ namespace ledger {
                 std::shared_ptr<AbstractBlockchainExplorerAccountSynchronizer::SynchronizationBuddy> &buddy,
                 const std::shared_ptr<api::ExecutionContext> &context) {
             _explorer->getCurrentBlock().onComplete(context,
-                                                    [buddy](const TryPtr<RippleLikeBlockchainExplorer::Block> &block) {
+                                                    [buddy](const TryPtr<Block> &block) {
                                                         if (block.isSuccess()) {
                                                             soci::session sql(
                                                                     buddy->account->getWallet()->getDatabase()->getPool());

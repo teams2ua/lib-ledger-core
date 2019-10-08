@@ -32,6 +32,7 @@
 #include "EthereumLikeBlockchainExplorerAccountSynchronizer.h"
 
 #include <wallet/ethereum/EthereumLikeAccount.h>
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {
@@ -43,7 +44,7 @@ namespace ledger {
 
         void EthereumLikeBlockchainExplorerAccountSynchronizer::updateCurrentBlock(std::shared_ptr<AbstractBlockchainExplorerAccountSynchronizer::SynchronizationBuddy> &buddy,
                                                                                    const std::shared_ptr<api::ExecutionContext> &context) {
-            _explorer->getCurrentBlock().onComplete(context, [buddy] (const TryPtr<EthereumLikeBlockchainExplorer::Block>& block) {
+            _explorer->getCurrentBlock().onComplete(context, [buddy] (const TryPtr<Block>& block) {
                 if (block.isSuccess()) {
                     soci::session sql(buddy->account->getWallet()->getDatabase()->getPool());
                     buddy->account->putBlock(sql, *block.getValue());

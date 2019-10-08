@@ -29,19 +29,42 @@
  *
  */
 #include "AbstractWallet.hpp"
-#include <wallet/pool/WalletPool.hpp>
-#include <debug/LoggerApi.hpp>
-#include <wallet/bitcoin/BitcoinLikeWallet.hpp>
-#include <wallet/common/database/AccountDatabaseHelper.h>
-#include <api/I32Callback.hpp>
-#include "AbstractAccount.hpp"
-#include <api/AccountListCallback.hpp>
-#include <async/algorithm.h>
-#include <wallet/common/database/BlockDatabaseHelper.h>
-#include <database/soci-number.h>
-#include <database/soci-date.h>
-#include <database/soci-option.h>
-#include <async/DedicatedContext.hpp>
+
+#include "api/Account.hpp"
+#include "api/AccountCallback.hpp"
+#include "api/AccountCreationInfo.hpp"
+#include "api/AccountCreationInfoCallback.hpp"
+#include "api/AccountListCallback.hpp"
+#include "api/Block.hpp"
+#include "api/BlockCallback.hpp"
+#include "api/DynamicObject.hpp"
+#include "api/ErrorCode.hpp"
+#include "api/ErrorCodeCallback.hpp"
+#include "api/ExtendedKeyAccountCreationInfo.hpp"
+#include "api/ExtendedKeyAccountCreationInfoCallback.hpp"
+#include "api/I32Callback.hpp"
+#include "api/ThreadDispatcher.hpp"
+#include "api/WalletType.hpp"
+
+#include "async/DedicatedContext.hpp"
+#include "async/algorithm.h"
+#include "collections/DynamicObject.hpp"
+#include "database/DatabaseSessionPool.hpp"
+#include "database/soci-date.h"
+#include "database/soci-number.h"
+#include "database/soci-option.h"
+#include "debug/LoggerApi.hpp"
+#include "debug/logger.hpp"
+#include "events/EventPublisher.hpp"
+#include "preferences/Preferences.hpp"
+#include "wallet/bitcoin/BitcoinLikeWallet.hpp"
+#include "wallet/common/AbstractAccount.hpp"
+#include "wallet/common/database/AccountDatabaseHelper.h"
+#include "wallet/common/database/BlockDatabaseHelper.h"
+#include "wallet/pool/WalletPool.hpp"
+#include "wallet/pool/database/WalletDatabaseEntry.hpp"
+
+
 namespace ledger {
     namespace core {
         AbstractWallet::AbstractWallet(const std::string &walletName,

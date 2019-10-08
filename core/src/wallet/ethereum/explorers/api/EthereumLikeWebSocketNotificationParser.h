@@ -46,7 +46,7 @@
 
 namespace ledger {
     namespace core {
-        class EthereumLikeWebSocketNotificationParser : public AbstractWebSocketNotificationParser<EthereumLikeBlockchainExplorerTransaction, EthereumLikeBlockchainExplorer::Block, EthereumLikeTransactionParser, EthereumLikeBlockParser> {
+        class EthereumLikeWebSocketNotificationParser : public AbstractWebSocketNotificationParser<EthereumLikeBlockchainExplorerTransaction, Block, EthereumLikeTransactionParser, EthereumLikeBlockParser> {
         public:
 
 
@@ -59,7 +59,7 @@ namespace ledger {
             bool Key(const rapidjson::Reader::Ch* str, rapidjson::SizeType length, bool copy) override {
                 _lastKey = std::string(str, length);
                 return AbstractWebSocketNotificationParser<EthereumLikeBlockchainExplorerTransaction,
-                        EthereumLikeBlockchainExplorer::Block,
+                        Block,
                         EthereumLikeTransactionParser,
                         EthereumLikeBlockParser>::Key(str, length, copy);
             }

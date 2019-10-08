@@ -32,7 +32,12 @@
 #ifndef LEDGER_CORE_ETHEREUMLIKEACCOUNT_H
 #define LEDGER_CORE_ETHEREUMLIKEACCOUNT_H
 
+#include <mutex>
+#include <memory>
+
 #include <time.h>
+#include "soci.h"
+
 #include <api/AddressListCallback.hpp>
 #include <api/Address.hpp>
 #include <api/EthereumLikeAccount.hpp>
@@ -51,7 +56,11 @@ namespace ledger {
         class EthereumLikeBlockchainExplorer;
         class EthereumLikeBlockchainObserver;
         class EthereumLikeAccountSynchronizer;
+        class EthereumLikeBlockchainExplorerTransaction;
         class EthereumLikeKeychain;
+        class ERC20Transaction;
+
+        template<typename T> class Future;
 
         class EthereumLikeAccount : public api::EthereumLikeAccount, public AbstractAccount {
         public:
@@ -68,7 +77,7 @@ namespace ledger {
                                 const std::shared_ptr<EthereumLikeAccountSynchronizer>& synchronizer,
                                 const std::shared_ptr<EthereumLikeKeychain>& keychain);
 
-            FuturePtr<EthereumLikeBlockchainExplorerTransaction> getTransaction(const std::string& hash);
+            Future<std::shared_ptr<EthereumLikeBlockchainExplorerTransaction>> getTransaction(const std::string& hash);
             void inflateOperation(Operation &out,
                                   const std::shared_ptr<const AbstractWallet>& wallet,
                                   const EthereumLikeBlockchainExplorerTransaction &tx);
@@ -78,11 +87,11 @@ namespace ledger {
                                       const Operation &operation,
                                       const ERC20Transaction &erc20Tx);
             void updateInternalTransactions(soci::session &sql, const Operation &operation);
-            bool putBlock(soci::session& sql, const EthereumLikeBlockchainExplorer::Block& block);
+            bool putBlock(soci::session& sql, const Block& block);
 
             std::shared_ptr<EthereumLikeKeychain> getKeychain() const;
 
-            FuturePtr<Amount> getBalance() override ;
+            Future<std::shared_ptr<Amount>> getBalance() override ;
             Future<AbstractAccount::AddressList> getFreshPublicAddresses() override ;
             Future<std::vector<std::shared_ptr<api::Amount>>>
             getBalanceHistory(const std::string & start,
@@ -116,7 +125,7 @@ namespace ledger {
             void getGasPrice(const std::shared_ptr<api::BigIntCallback> & callback) override;
 
             void getEstimatedGasLimit(const std::string & address, const std::shared_ptr<api::BigIntCallback> & callback) override ;
-            FuturePtr<api::BigInt> getERC20Balance(const std::string & erc20Address);
+            Future<std::shared_ptr<api::BigInt>> getERC20Balance(const std::string & erc20Address);
             void getERC20Balance(const std::string & erc20Address, const std::shared_ptr<api::BigIntCallback> & callback) override;
 
             void addERC20Accounts(soci::session &sql,

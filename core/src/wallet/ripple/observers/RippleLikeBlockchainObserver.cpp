@@ -38,6 +38,7 @@
 #include <utils/JSONUtils.h>
 
 #include <wallet/ripple/explorers/api/RippleLikeWebSocketNotificationParser.h>
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {
@@ -80,7 +81,7 @@ namespace ledger {
             }
         }
 
-        void RippleLikeBlockchainObserver::putBlock(const RippleLikeBlockchainExplorer::Block &block) {
+        void RippleLikeBlockchainObserver::putBlock(const Block &block) {
             std::lock_guard<std::mutex> lock(_lock);
             for (const auto &account : _accounts) {
                 account->run([account, block]() {

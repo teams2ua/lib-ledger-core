@@ -31,19 +31,36 @@
 #ifndef LEDGER_CORE_BITCOINLIKEWALLET_HPP
 #define LEDGER_CORE_BITCOINLIKEWALLET_HPP
 
-#include "api/BitcoinLikeWallet.hpp"
 #include <memory>
-#include "explorers/BitcoinLikeBlockchainExplorer.hpp"
-#include "keychains/BitcoinLikeKeychain.hpp"
-#include "observers/BitcoinLikeBlockchainObserver.hpp"
-#include "synchronizers/BitcoinLikeAccountSynchronizer.hpp"
+#include <string>
+
+#include "api/BitcoinLikeWallet.hpp"
+#include "api/WalletType.hpp"
 #include "wallet/common/AbstractWallet.hpp"
-#include "api/BitcoinLikeNetworkParameters.hpp"
-#include "wallet/bitcoin/factories/BitcoinLikeWalletFactory.hpp"
-#include "wallet/bitcoin/database/BitcoinLikeWalletDatabase.h"
+
+namespace soci {
+    class session;
+}
 
 namespace ledger {
     namespace core {
+        namespace api {
+            class Account;
+            class EventBus;
+            class ExtendedKeyAccountCreationInfo;
+            class AccountCreationInfo;
+        }
+
+        class AbstractAccount;
+        class BitcoinLikeAccountSynchronizer;
+        class BitcoinLikeBlockchainExplorer;
+        class BitcoinLikeBlockchainObserver;
+        class BitcoinLikeKeychainFactory;
+        class DerivationScheme;
+        class DynamicObject;
+        class WalletPool;
+        template<typename T> class Future;
+
         class BitcoinLikeWallet : public virtual api::BitcoinLikeWallet, public virtual AbstractWallet {
         public:
             static const api::WalletType type;
@@ -64,9 +81,9 @@ namespace ledger {
             bool isSynchronizing() override;
             std::shared_ptr<api::EventBus> synchronize() override;
 
-            FuturePtr<ledger::core::api::Account> newAccountWithInfo(const api::AccountCreationInfo &info) override;
+            FuturePtr<api::Account> newAccountWithInfo(const api::AccountCreationInfo &info) override;
 
-            FuturePtr<ledger::core::api::Account>
+            FuturePtr<api::Account>
             newAccountWithExtendedKeyInfo(const api::ExtendedKeyAccountCreationInfo &info) override;
 
             Future<api::ExtendedKeyAccountCreationInfo>

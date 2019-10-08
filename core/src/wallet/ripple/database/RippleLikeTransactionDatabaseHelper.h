@@ -35,7 +35,7 @@
 
 #include <string>
 #include <soci.h>
-#include <wallet/ripple/explorers/RippleLikeBlockchainExplorer.h>
+#include <wallet/ripple/explorers/RippleLikeBlockchainExplorerTransaction.h>
 
 namespace ledger {
     namespace core {

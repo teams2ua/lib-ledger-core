@@ -44,6 +44,7 @@
 
 #include <wallet/common/database/AccountDatabaseHelper.h>
 #include <wallet/ethereum/database/EthereumLikeAccountDatabaseHelper.h>
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {

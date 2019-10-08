@@ -32,13 +32,20 @@
 #ifndef LEDGER_CORE_ETHEREUMLIKEOPERATION_H
 #define LEDGER_CORE_ETHEREUMLIKEOPERATION_H
 
+#include <memory>
+#include <vector>
+
 #include <api/EthereumLikeOperation.hpp>
-#include <api/EthereumLikeTransaction.hpp>
-#include <wallet/common/api_impl/OperationApi.h>
-#include <api/InternalTransaction.hpp>
 
 namespace ledger {
     namespace core {
+        namespace api {
+            class EthereumLikeTransaction;
+            class InternalTransaction;
+        }
+
+        class OperationApi;
+
         class EthereumLikeOperation : public api::EthereumLikeOperation {
         public:
             EthereumLikeOperation(const std::shared_ptr<OperationApi>& baseOp);

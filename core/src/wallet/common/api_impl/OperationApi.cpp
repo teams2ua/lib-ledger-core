@@ -29,15 +29,15 @@
  *
  */
 #include "OperationApi.h"
-#include <wallet/common/Amount.h>
-#include "../AbstractAccount.hpp"
-#include <wallet/common/Amount.h>
-#include <wallet/bitcoin/api_impl/BitcoinLikeOperation.h>
-#include <wallet/ethereum/api_impl/EthereumLikeOperation.h>
-#include <wallet/ripple/api_impl/RippleLikeOperation.h>
-#include <wallet/tezos/api_impl/TezosLikeOperation.h>
-#include <api/WalletType.hpp>
-
+#include "api/WalletType.hpp"
+#include "wallet/bitcoin/api_impl/BitcoinLikeOperation.h"
+#include "wallet/common/AbstractAccount.hpp"
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/Amount.h"
+#include "wallet/ethereum/api_impl/EthereumLikeOperation.h"
+#include "wallet/ripple/api_impl/RippleLikeOperation.h"
+#include "wallet/tezos/api_impl/TezosLikeOperation.h"
+#include "preferences/Preferences.hpp"
 
 namespace ledger {
     namespace core {

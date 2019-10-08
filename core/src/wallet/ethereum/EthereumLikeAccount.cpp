@@ -30,9 +30,12 @@
 
 
 #include "EthereumLikeAccount.h"
+
 #include "EthereumLikeWallet.h"
 #include <api/ERC20Token.hpp>
 #include <api_impl/BigIntImpl.hpp>
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/OperationQuery.h"
 #include <wallet/common/database/OperationDatabaseHelper.h>
 #include <wallet/common/synchronizers/AbstractBlockchainExplorerAccountSynchronizer.h>
 #include <wallet/ethereum/database/EthereumLikeAccountDatabaseHelper.h>
@@ -58,10 +61,12 @@
 #include <database/soci-number.h>
 #include <database/soci-date.h>
 #include <database/soci-option.h>
+#include "database/DatabaseSessionPool.hpp"
 
 #include "utils/Serialization.hpp"
 
 #include "preferences/PreferencesEditor.hpp"
+#include "async/Future.hpp"
 
 namespace ledger {
     namespace core {
@@ -79,8 +84,7 @@ namespace ledger {
             _accountAddress = keychain->getAddress()->toString();
         }
 
-
-        FuturePtr<EthereumLikeBlockchainExplorerTransaction> EthereumLikeAccount::getTransaction(const std::string& hash) {
+        Future<std::shared_ptr<EthereumLikeBlockchainExplorerTransaction>> EthereumLikeAccount::getTransaction(const std::string& hash) {
                 auto self = std::dynamic_pointer_cast<EthereumLikeAccount>(shared_from_this());
                 return async<std::shared_ptr<EthereumLikeBlockchainExplorerTransaction>>([=] () -> std::shared_ptr<EthereumLikeBlockchainExplorerTransaction> {
                     auto tx = std::make_shared<EthereumLikeBlockchainExplorerTransaction>();
@@ -259,7 +263,7 @@ namespace ledger {
         }
 
         bool EthereumLikeAccount::putBlock(soci::session& sql,
-                                           const EthereumLikeBlockchainExplorer::Block& block) {
+                                           const Block& block) {
                 Block abstractBlock;
                 abstractBlock.hash = block.hash;
                 abstractBlock.currencyName = getWallet()->getCurrency().name;
@@ -276,7 +280,7 @@ namespace ledger {
                 return _keychain;
         }
 
-        FuturePtr<Amount> EthereumLikeAccount::getBalance() {
+        Future<std::shared_ptr<Amount>> EthereumLikeAccount::getBalance() {
             std::vector<EthereumLikeKeychain::Address> listAddresses{_keychain->getAddress()};
                 auto currency = getWallet()->getCurrency();
                 return _explorer->getBalance(listAddresses).mapPtr<Amount>(getContext(), [currency] (const std::shared_ptr<BigInt> &balance) -> std::shared_ptr<Amount> {
@@ -378,7 +382,7 @@ namespace ledger {
                 log->debug(" Start erasing data of account : {}", getAccountUid());
                 soci::session sql(getWallet()->getDatabase()->getPool());
                 //Update account's internal preferences (for synchronization)
-                auto savedState = getObject<BlockchainExplorerAccountSynchronizationSavedState>(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
+                auto savedState = parseState(getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->getData("state", {}));
                 if (savedState.nonEmpty()) {
                         //Reset batches to blocks mined before given date
                         auto previousBlock = BlockDatabaseHelper::getPreviousBlockInDatabase(sql, getWallet()->getCurrency().name, date);
@@ -391,7 +395,7 @@ namespace ledger {
                                         batch.blockHash = "";
                                 }
                         }
-                        getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->editor()->putObject<BlockchainExplorerAccountSynchronizationSavedState>("state", savedState.getValue())->commit();
+                        getInternalPreferences()->getSubPreferences("BlockchainExplorerAccountSynchronizer")->editor()->putData("state",serializeState( savedState.getValue()))->commit();
                 }
                 auto accountUid = getAccountUid();
                 sql << "DELETE FROM operations WHERE account_uid = :account_uid AND date >= :date ", soci::use(accountUid), soci::use(date);
@@ -415,7 +419,7 @@ namespace ledger {
                 auto self = std::static_pointer_cast<EthereumLikeAccount>(shared_from_this());
 
                 //Update current block height (needed to compute trust level)
-                _explorer->getCurrentBlock().onComplete(getContext(), [self] (const TryPtr<EthereumLikeBlockchainExplorer::Block>& block) mutable {
+                _explorer->getCurrentBlock().onComplete(getContext(), [self] (const TryPtr<Block>& block) mutable {
                     if (block.isSuccess()) {
                             self->_currentBlockHeight = block.getValue()->height;
                     }
@@ -549,7 +553,7 @@ namespace ledger {
             }).callback(getContext(), callback);
         }
 
-        FuturePtr<api::BigInt> EthereumLikeAccount::getERC20Balance(const std::string & erc20Address) {
+        Future<std::shared_ptr<api::BigInt>> EthereumLikeAccount::getERC20Balance(const std::string & erc20Address) {
             return _explorer->getERC20Balance(_keychain->getAddress()->toEIP55(), erc20Address).mapPtr<api::BigInt>(getContext(), [] (const std::shared_ptr<BigInt> &erc20Balance) -> std::shared_ptr<api::BigInt> {
                 return std::make_shared<api::BigIntImpl>(*erc20Balance);
             });

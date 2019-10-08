@@ -31,16 +31,22 @@
 #ifndef LEDGER_CORE_WALLETPOOL_API_HPP
 #define LEDGER_CORE_WALLETPOOL_API_HPP
 
+#include <memory>
+
 #include <api/WalletPool.hpp>
-#include <wallet/pool/WalletPool.hpp>
-#include <api/WalletPoolCallback.hpp>
-#include <api/ErrorCodeCallback.hpp>
-#include <debug/LoggerApi.hpp>
+
 
 namespace ledger {
     namespace core {
-
+        namespace api {
+            class ErrorCodeCallback;
+            class ExecutionContext;
+            class WalletPoolCallback;
+        }
         class BitcoinLikeWalletFactory;
+        class ExecutionContext;
+        class LoggerApi;
+        class WalletPool;
 
         class WalletPoolApi : public api::WalletPool, public std::enable_shared_from_this<WalletPoolApi> {
         public:

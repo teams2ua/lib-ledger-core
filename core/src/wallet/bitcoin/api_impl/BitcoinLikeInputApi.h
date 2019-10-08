@@ -33,7 +33,7 @@
 
 #include <api/BitcoinLikeInput.hpp>
 #include <wallet/common/api_impl/OperationApi.h>
-#include "../explorers/BitcoinLikeBlockchainExplorer.hpp"
+#include "wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorerTransaction.h"
 
 namespace ledger {
     namespace core {

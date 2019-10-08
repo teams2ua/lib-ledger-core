@@ -35,6 +35,7 @@
 #include "math/BigInt.h"
 #include <wallet/bitcoin/api_impl/BitcoinLikeScriptApi.h>
 #include <wallet/bitcoin/api_impl/BitcoinLikeTransactionApi.h>
+#include "wallet/bitcoin/keychains/BitcoinLikeKeychain.hpp"
 #include <random>
 
 namespace ledger {

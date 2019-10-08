@@ -29,23 +29,32 @@
  */
 
 #include "ERC20LikeAccount.h"
-#include <math/BigInt.h>
-#include <api_impl/BigIntImpl.hpp>
-#include <api/Amount.hpp>
-#include <api/OperationType.hpp>
-#include <api/TimePeriod.hpp>
-#include <bytes/RLP/RLPStringEncoder.h>
-#include <utils/hex.h>
-#include <math/BigInt.h>
-#include <api/Address.hpp>
-#include <api/ErrorCode.hpp>
-#include <utils/Exception.hpp>
+
+#include "api/Address.hpp"
+#include "api/Amount.hpp"
+#include "api/BigInt.hpp"
+#include "api/BigIntCallback.hpp"
+#include "api/BinaryCallback.hpp"
+#include "api/ERC20LikeOperation.hpp"
+#include "api/ErrorCode.hpp"
+#include "api/OperationType.hpp"
+#include "api/TimePeriod.hpp"
+#include "api_impl/BigIntImpl.hpp"
+#include "bytes/RLP/RLPStringEncoder.h"
+#include "database/query/ConditionQueryFilter.h"
+#include "database/soci-date.h"
 #include "erc20Tokens.h"
-#include <wallet/common/OperationQuery.h>
-#include <wallet/common/BalanceHistory.hpp>
-#include <soci.h>
-#include <database/soci-date.h>
-#include <database/query/ConditionQueryFilter.h>
+#include "math/BigInt.h"
+#include "math/BigInt.h"
+#include "soci.h"
+#include "utils/Exception.hpp"
+#include "utils/hex.h"
+#include "wallet/common/BalanceHistory.hpp"
+#include "wallet/common/OperationQuery.h"
+#include "wallet/ethereum/EthereumLikeAccount.h"
+#include "wallet/ethereum/ERC20/ERC20LikeOperation.h"
+#include "wallet/ethereum/ERC20/ERC20OperationQuery.h"
+#include "async/Future.hpp"
 
 using namespace soci;
 
@@ -72,7 +81,7 @@ namespace ledger {
             return _accountAddress;
         }
 
-        FuturePtr<api::BigInt> ERC20LikeAccount::getBalance() {
+        Future<std::shared_ptr<api::BigInt>> ERC20LikeAccount::getBalance() {
             auto parentAccount = _account.lock();
             if (!parentAccount) {
                 throw make_exception(api::ErrorCode::NULL_POINTER, "Could not lock parent account.");

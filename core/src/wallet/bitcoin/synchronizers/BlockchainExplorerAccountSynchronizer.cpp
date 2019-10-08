@@ -31,6 +31,7 @@
 #include "BlockchainExplorerAccountSynchronizer.h"
 #include <wallet/bitcoin/BitcoinLikeAccount.hpp>
 #include "wallet/common/Block.h"
+#include "database/DatabaseSessionPool.hpp"
 
 namespace ledger {
     namespace core {

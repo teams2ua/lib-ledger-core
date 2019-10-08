@@ -29,18 +29,20 @@
  *
  */
 #include "BitcoinLikeTransactionApi.h"
-#include <bytes/BytesWriter.h>
-#include <bytes/BytesReader.h>
-#include <wallet/common/Amount.h>
-#include <wallet/common/AbstractAccount.hpp>
-#include <wallet/bitcoin/scripts/BitcoinLikeScript.h>
-#include <wallet/bitcoin/keychains/BitcoinLikeKeychain.hpp>
-#include <wallet/bitcoin/networks.hpp>
-#include <crypto/HASH160.hpp>
-#include <crypto/SHA512.hpp>
-#include <math/Base58.hpp>
-#include <api/KeychainEngines.hpp>
-#include <api/BitcoinLikeTransactionBuilder.hpp>
+
+#include "api/BitcoinLikeTransactionBuilder.hpp"
+#include "api/KeychainEngines.hpp"
+#include "bytes/BytesReader.h"
+#include "bytes/BytesWriter.h"
+#include "crypto/HASH160.hpp"
+#include "crypto/SHA512.hpp"
+#include "math/Base58.hpp"
+#include "wallet/bitcoin/keychains/BitcoinLikeKeychain.hpp"
+#include "wallet/bitcoin/networks.hpp"
+#include "wallet/bitcoin/scripts/BitcoinLikeScript.h"
+#include "wallet/common/AbstractAccount.hpp"
+#include "wallet/common/AbstractWallet.hpp"
+#include "wallet/common/Amount.h"
 
 namespace ledger {
     namespace core {

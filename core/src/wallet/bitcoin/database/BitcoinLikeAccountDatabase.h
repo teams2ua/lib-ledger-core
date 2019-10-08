@@ -31,9 +31,7 @@
 #ifndef LEDGER_CORE_BITCOINLIKEACCOUNTDATABASE_H
 #define LEDGER_CORE_BITCOINLIKEACCOUNTDATABASE_H
 
-#include "BitcoinLikeAccountDatabaseEntry.h"
-#include "../explorers/BitcoinLikeBlockchainExplorer.hpp"
-#include <database/DatabaseSessionPool.hpp>
+#include <string>
 
 namespace ledger {
     namespace core {

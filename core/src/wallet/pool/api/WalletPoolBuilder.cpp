@@ -30,6 +30,15 @@
  */
 #include "WalletPoolBuilder.hpp"
 #include "WalletPoolApi.hpp"
+#include "api/DatabaseBackend.hpp"
+#include "api/DatabaseBackend.hpp"
+#include "api/DynamicObject.hpp"
+#include "api/HttpClient.hpp"
+#include "api/LogPrinter.hpp"
+#include "api/PathResolver.hpp"
+#include "api/RandomNumberGenerator.hpp"
+#include "api/ThreadDispatcher.hpp"
+#include "api/WebSocketClient.hpp"
 
 namespace ledger { namespace core {
 
