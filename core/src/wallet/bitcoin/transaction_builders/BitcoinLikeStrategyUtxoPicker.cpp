@@ -35,7 +35,7 @@
 #include <wallet/bitcoin/api_impl/BitcoinLikeScriptApi.h>
 #include <wallet/bitcoin/api_impl/BitcoinLikeTransactionApi.h>
 #include <wallet/bitcoin/explorers/BitcoinLikeBlockchainExplorer.hpp>
-
+#include <numeric>
 #include <random>
 
 namespace ledger {
@@ -438,7 +438,7 @@ namespace ledger {
             std::vector<size_t> indexes;
             auto const seed = std::chrono::system_clock::now().time_since_epoch().count();
 
-            indexes.reserve(utxos.size());
+            indexes.resize(utxos.size());
             std::iota(indexes.begin(), indexes.end(), 0);
             std::shuffle(indexes.begin(), indexes.end(), std::default_random_engine(seed));
 
